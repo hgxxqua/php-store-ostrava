@@ -180,7 +180,7 @@ aside.categories h4 {
 .tag-btn:hover { color: #ccff00; border-color: #ccff00; }
 .tag-btn.active { background: #ccff00; color: #000; border-color: #ccff00; font-weight: bold; }
 
-/* PRODUCT CARD TAGS */
+/* PRODUCT CARD TAGS 
 .product-category {
     font-size: 10px;
     color: #666;
@@ -215,7 +215,7 @@ aside.categories h4 {
     font-size: 14px;
     padding: 20px 0;
 }
-
+*/
 footer {
     text-align: center;
     padding: 16px;
