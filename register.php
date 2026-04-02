@@ -86,6 +86,25 @@ a {
 a:hover {
     color: #fff; 
 }
+
+.blok-dla-knopki
+{
+    width:100%;
+    display:flex;
+    justify-content:center;  
+    text-align:center; 
+}
+
+
+.knopka-dla-rega{ 
+    
+    margin-bottom:30px;
+    text-align:center;  
+    height:30px;  
+    width:150px;
+}
+
+
     </style>
 </head>
 <body>
@@ -119,8 +138,12 @@ a:hover {
 <input type="email" name="email" required="">
 <label>Email</label>
 </div>
+
+<div class="blok-dla-knopki">
+    <button type="submit" class="knopka-dla-rega">Rejestruj się</button>
+                  </div>  
                     
-                    <div class="rejestracja">
+                  <div class="rejestracja">
                         Już masz konto? <a href="login.php">Login</a>
                        </div>
             </form>

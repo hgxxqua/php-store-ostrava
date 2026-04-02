@@ -89,6 +89,26 @@ a:hover {
     color: #fff; 
 }
 
+.blok-dla-knopki
+{
+    width:100%;
+    display:flex;
+    justify-content:center;  
+    text-align:center; 
+}
+
+
+.knopka-dla-rega{ 
+    
+    margin-bottom:30px;
+    text-align:center;  
+    height:30px;  
+    width:150px;
+}
+
+
+
+
     </style>
 </head>
 <body>
@@ -108,9 +128,14 @@ a:hover {
                     <label>Password</label>
 
                     
+
+                    <div class="blok-dla-knopki">
+    <button type="submit" class="knopka-dla-rega">Zaloguj się</button>
+                  </div> 
+
                     <div class="rejestracja">
 
-                        Nie masz konta? <a href="register.php">Rejestruj się</a>
+                        Nie masz konta? <a href="register.php">Załóż konto</a>
                        </div>
                 </div>
             </form>
