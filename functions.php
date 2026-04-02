@@ -5,7 +5,7 @@ require_once("db.php");
 
 
 function login($username, $password){
-global $db = polacz_z_baza();
+$db = polacz_z_baza();
 }
 
 
