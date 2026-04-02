@@ -5,7 +5,7 @@ function login($username, $password){
 $db = polacz_z_baza();
 }
 
-
+// Регистрирует нового пользователя и создаёт сессию; выводит сообщение если логин занят
 function registration($usernamedb, $passworddb, $emaildb){
 $db = polacz_z_baza();
 
@@ -28,6 +28,7 @@ if($checklogin == true){
 
 }
 
+// Проверяет свободен ли логин: возвращает true если не занят, false если уже существует
 function checklogin($username, $db){
 
 $check = mysqli_fetch_assoc(mysqli_query($db,"SELECT COUNT(*) AS count FROM users WHERE name = '$username'"));

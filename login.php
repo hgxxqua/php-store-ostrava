@@ -104,6 +104,9 @@ a:hover {
     text-align:center;  
     height:30px;  
     width:150px;
+    font-family:Verdana;
+    font-size:15px;
+    cursor:pointer;
 }
 
 
@@ -130,7 +133,7 @@ a:hover {
                     
 
                     <div class="blok-dla-knopki">
-    <input type="submit" class="knopka-dla-rega">Zaloguj się</button>
+    <input type="submit" class="knopka-dla-rega" value="Zaloguj się"></button>
                   </div> 
 
                     <div class="rejestracja">
