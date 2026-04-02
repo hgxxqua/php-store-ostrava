@@ -30,12 +30,7 @@
 </header>
 
 <div class="filters-wrapper">
-    <div class="search">
-        <form action="index.php" method="GET">
-            <input type="search" name="q" placeholder="Search...">
-            <button type="submit">Find</button>
-        </form>
-    </div>
+    
     <div class="filters">
         <span class="filter-label">Filter by brand:</span>
         <a href="?brand=Balenciaga" class="tag-btn">Balenciaga</a>
@@ -43,6 +38,12 @@
         <a href="?brand=Gucci"      class="tag-btn">Gucci</a>
         <a href="?brand=Prada"      class="tag-btn">Prada</a>
         <a href="?brand=Versace"    class="tag-btn">Versace</a>
+    </div>
+    <div class="search">
+        <form action="index.php" method="GET">
+            <input type="search" name="q" placeholder="Search...">
+            <button type="submit">Find</button>
+        </form>
     </div>
 </div>
 
