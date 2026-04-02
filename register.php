@@ -89,7 +89,7 @@ a:hover {
     </style>
 </head>
 <body>
-    <a href="#"><h2 style="color:white">Back</h2></a>
+    <a href="login.php"><h2 style="color:white">Back</h2></a>
     <div class="glowa">
         <div class="login-box">
             <h2>Rejestracja</h2>
