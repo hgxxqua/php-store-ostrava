@@ -1,0 +1,398 @@
+<?php
+session_start();
+if (!isset($_SESSION['role'])) {
+    header('Location: /index.php'); exit;
+}
+if ($_SESSION['role'] !== 'admin') {
+    header('Location: /index.php'); exit;
+}
+
+require_once 'db.php';
+$conn = polacz_z_baza();
+
+$success = '';
+$error   = '';
+
+// Добавление товара
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'add') {
+    $name     = mysqli_real_escape_string($conn, trim($_POST['name']     ?? ''));
+    $desc     = mysqli_real_escape_string($conn, trim($_POST['desc']     ?? ''));
+    $price    = (int)($_POST['price']   ?? 0);
+    $size     = mysqli_real_escape_string($conn, trim($_POST['size']     ?? ''));
+    $brand    = mysqli_real_escape_string($conn, trim($_POST['brand']    ?? ''));
+    $category = mysqli_real_escape_string($conn, trim($_POST['category'] ?? ''));
+    $stock    = (int)($_POST['stock']   ?? 0);
+
+    if ($name && $price > 0) {
+        mysqli_query($conn, "
+            INSERT INTO products (name, description, price, size, brand, category, stock)
+            VALUES ('$name', '$desc', $price, '$size', '$brand', '$category', $stock)
+        ");
+        $success = "Товар «{$name}» добавлен!";
+    } else {
+        $error = 'Заполни название и цену.';
+    }
+}
+
+// Удаление товара
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'delete') {
+    $id = (int)($_POST['product_id'] ?? 0);
+    if ($id > 0) {
+        mysqli_query($conn, "DELETE FROM products WHERE id = $id");
+        $success = "Товар удалён.";
+    }
+}
+
+// Список всех товаров
+$res_products = mysqli_query($conn, "SELECT * FROM products ORDER BY id DESC");
+?>
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel — ShoeShop</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0f0f11;
+      --surface:  #18181c;
+      --surface2: #222228;
+      --border:   rgba(255,255,255,0.07);
+      --text:     #e8e8ea;
+      --muted:    #7a7a85;
+      --pink:     #ff2d78;
+      --pink-dim: rgba(255,45,120,0.12);
+      --accent:   #c8f04a;
+      --radius:   14px;
+    }
+
+    body {
+      font-family: 'Onest', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 58px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(15,15,17,0.95);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      gap: 24px;
+    }
+
+    .logo {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .logo span { color: var(--text); font-weight: 400; }
+
+    .nav-link {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 5px 11px;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+
+    .nav-admin-link {
+      color: var(--pink);
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .admin-name { font-size: 14px; color: var(--pink); font-weight: 500; }
+
+    .btn-admin-panel {
+      border: 1px solid var(--pink);
+      color: var(--pink);
+      background: transparent;
+      font-family: 'Onest', sans-serif;
+      font-size: 13px;
+      padding: 6px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+    }
+    .btn-admin-panel:hover { background: var(--pink-dim); }
+
+    .admin-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 28px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(255,45,120,0.05);
+    }
+
+    .admin-banner-title {
+      font-family: 'Unbounded', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--pink);
+    }
+
+    .admin-banner-sub { font-size: 13px; color: var(--muted); }
+
+    .alert {
+      margin: 16px 28px 0;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+    .alert-success {
+      background: rgba(200,240,74,0.1);
+      border: 1px solid rgba(200,240,74,0.25);
+      color: var(--accent);
+    }
+    .alert-error {
+      background: rgba(255,45,120,0.1);
+      border: 1px solid rgba(255,45,120,0.25);
+      color: var(--pink);
+    }
+
+    .page {
+      max-width: 1060px;
+      margin: 28px auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--pink);
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    label { font-size: 12px; color: var(--muted); font-weight: 500; }
+
+    input, select, textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'Onest', sans-serif;
+      font-size: 14px;
+      padding: 10px 13px;
+      border-radius: 9px;
+      outline: none;
+      transition: border-color .2s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(255,45,120,0.5);
+    }
+    select option { background: var(--surface2); }
+    textarea { resize: vertical; min-height: 70px; }
+
+    .btn-add {
+      width: 100%;
+      padding: 13px;
+      background: var(--pink);
+      color: #fff;
+      font-family: 'Unbounded', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: opacity .2s, transform .1s;
+      margin-top: 4px;
+    }
+    .btn-add:hover { opacity: .88; }
+    .btn-add:active { transform: scale(.98); }
+
+    .products-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+
+    .product-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .product-row:last-child { border-bottom: none; }
+
+    .product-name { font-size: 14px; font-weight: 500; flex: 1; }
+
+    .cat-badge {
+      font-size: 11px;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 3px 9px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+    }
+
+    .product-price {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      min-width: 72px;
+      text-align: right;
+    }
+
+    .btn-delete {
+      background: transparent;
+      border: 1px solid rgba(255,45,120,0.35);
+      color: var(--pink);
+      font-family: 'Onest', sans-serif;
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .btn-delete:hover { background: var(--pink-dim); border-color: var(--pink); }
+
+    @media (max-width: 700px) {
+      .page { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="/index.php" class="logo">👟 <span>Shoe</span>Shop</a>
+  <a href="/catalog.php" class="nav-link">Каталог</a>
+  <a href="/admin.php" class="nav-admin-link">⚡ Админ</a>
+  <div class="nav-right">
+    <span class="admin-name"><?= htmlspecialchars($_SESSION['name']) ?> (admin)</span>
+    <a href="/admin.php" class="btn-admin-panel">Admin Panel</a>
+  </div>
+</nav>
+
+<div class="admin-banner">
+  <div class="admin-banner-title">⚡ Панель администратора</div>
+  <div class="admin-banner-sub">Только для role = admin</div>
+</div>
+
+<?php if ($success): ?>
+  <div class="alert alert-success">✓ <?= htmlspecialchars($success) ?></div>
+<?php endif; ?>
+<?php if ($error): ?>
+  <div class="alert alert-error">✗ <?= htmlspecialchars($error) ?></div>
+<?php endif; ?>
+
+<div class="page">
+
+  <!-- Форма добавления -->
+  <div class="card">
+    <div class="card-title">+ Добавить товар</div>
+    <form method="POST" action="/admin.php">
+      <input type="hidden" name="action" value="add">
+
+      <div class="form-group">
+        <label>Название</label>
+        <input type="text" name="name" placeholder="Ultra Boost 5.0" required>
+      </div>
+
+      <div class="form-group">
+        <label>Описание</label>
+        <textarea name="desc" placeholder="Лёгкие беговые кроссовки..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Цена (₽)</label>
+          <input type="number" name="price" placeholder="7490" min="1" required>
+        </div>
+        <div class="form-group">
+          <label>Размер</label>
+          <input type="text" name="size" placeholder="42">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Бренд</label>
+          <input type="text" name="brand" placeholder="Adidas">
+        </div>
+        <div class="form-group">
+          <label>Категория</label>
+          <select name="category">
+            <option value="Casual">Casual</option>
+            <option value="Sport">Sport</option>
+            <option value="Formal">Formal</option>
+            <option value="Outdoor">Outdoor</option>
+            <option value="Party">Party</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Остаток на складе</label>
+        <input type="number" name="stock" placeholder="15" min="0">
+      </div>
+
+      <button type="submit" class="btn-add">Добавить товар</button>
+    </form>
+  </div>
+
+  <!-- Список товаров из БД -->
+  <div class="card">
+    <div class="products-title">Все товары</div>
+
+    <?php while ($p = mysqli_fetch_assoc($res_products)): ?>
+      <div class="product-row">
+        <span class="product-name"><?= htmlspecialchars($p['name']) ?></span>
+        <span class="cat-badge"><?= htmlspecialchars($p['category']) ?></span>
+        <span class="product-price"><?= number_format($p['price'], 0, '.', ' ') ?> ₽</span>
+        <form method="POST" action="/admin.php" style="margin:0">
+          <input type="hidden" name="action" value="delete">
+          <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
+          <button type="submit" class="btn-delete"
+            onclick="return confirm('Удалить «<?= htmlspecialchars($p['name'], ENT_QUOTES) ?>»?')">
+            удалить
+          </button>
+        </form>
+      </div>
+    <?php endwhile; ?>
+  </div>
+
+</div>
+
+<?php mysqli_close($conn); ?>
+</body>
+</html>

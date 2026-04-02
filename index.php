@@ -16,13 +16,15 @@
         <ul>
             <li><a href="index.php">Home</a></li>
             <li><a href="index.php">Products</a></li>
-            <li><a href="#">Contact</a></li>
+            
         </ul>
     </nav>
     <div class="cart">
         <a href="cart.php">Cart</a>
     </div>
     <div class="auth">
+        <a href="#" >Contact</a>
+        <a href="#" >|</a>
         <a href="login.php">Login</a>
     </div>
 </header>
