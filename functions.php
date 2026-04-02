@@ -22,7 +22,7 @@ if($checklogin == true){
 
 }else if(!$checklogin){
     $_SESSION["error"] = "Ten login jest już zajęty";
-    header("Location: register.php");
+    header("Location:  /php-store-ostrava/register.php");
     exit();
 }
 
