@@ -13,8 +13,8 @@ if(!$connectionDB){
     die('Nie udalo sie'. "<br>" . mysqli_connect_error() . "<br>" .  "Baza dannych musi nazywac sie: php-store" . "<br>");
 }
 
-
- return $connectionDB;
+return $connectionDB;
 }
+
 
 ?>
