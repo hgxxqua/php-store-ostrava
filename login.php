@@ -130,7 +130,7 @@ a:hover {
                     
 
                     <div class="blok-dla-knopki">
-    <button type="submit" class="knopka-dla-rega">Zaloguj się</button>
+    <input type="submit" class="knopka-dla-rega">Zaloguj się</button>
                   </div> 
 
                     <div class="rejestracja">

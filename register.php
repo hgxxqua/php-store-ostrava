@@ -93,15 +93,18 @@ a:hover {
     display:flex;
     justify-content:center;  
     text-align:center; 
+    color:white;
 }
 
 
 .knopka-dla-rega{ 
-    
+    font-size:15px;
     margin-bottom:30px;
     text-align:center;  
     height:30px;  
     width:150px;
+    font-family: Verdana; 
+    cursor:pointer;
 }
 
 
@@ -140,7 +143,7 @@ a:hover {
 </div>
 
 <div class="blok-dla-knopki">
-    <button type="submit" class="knopka-dla-rega">Rejestruj się</button>
+    <input type="submit" class="knopka-dla-rega"  value="Rejestruj się"></button>
                   </div>  
                     
                   <div class="rejestracja">
