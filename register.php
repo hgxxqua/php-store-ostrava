@@ -1,3 +1,16 @@
+<?php
+        session_start();
+        require_once('functions.php');
+
+        if(isset($_POST['username']))       {
+            $username = $_POST['username'];
+            $password = $_POST['password'];
+            $email    = $_POST['email'];
+            registration($username, $password, $email);
+        }
+    ?>
+
+
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -111,14 +124,7 @@ a:hover {
     </style>
 </head>
 <body>
-    <?php
-    require_once('functions.php');
     
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $email = $_POST['email'];
-
-    ?>
 
 
 
@@ -126,7 +132,14 @@ a:hover {
     <a href="#"><h2 style="color:white">Back</h2></a>
     <div class="glowa">
         <div class="login-box">
-            <h2>Rejestracja</h2>
+            
+        <h2>Rejestracja</h2>
+                        
+                <?php if(isset($_SESSION["error"])): ?>
+                    <p style="color:red; text-align:center"><?= $_SESSION["error"] ?></p>
+                    <?php unset($_SESSION["error"]); ?>
+                <?php endif; ?>
+
             <form method='POST' action=''>
                 <div class="user-box">
                     <input type="text" name="username" required="">
@@ -135,7 +148,7 @@ a:hover {
                 <div class="user-box">
                     <input type="password" name="password" required="">
                     <label>Password</label>
-
+                </div>
                     <div class="user-box">
 
 <input type="email" name="email" required="">
@@ -143,8 +156,8 @@ a:hover {
 </div>
 
 <div class="blok-dla-knopki">
-    <input type="submit" class="knopka-dla-rega"  value="Rejestruj się"></button>
-                  </div>  
+    <input type="submit" class="knopka-dla-rega"  value="Rejestruj się" required=""></button>
+    </div>  
                     
                   <div class="rejestracja">
                         Już masz konto? <a href="login.php">Login</a>
