@@ -204,7 +204,7 @@ cursor:pointer;
 <body>
 
 <nav>
-<a href="/index.php" class="logo">👟 <span>Shoe</span>Shop</a>
+<a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
 </nav>
 
 <div class="page">

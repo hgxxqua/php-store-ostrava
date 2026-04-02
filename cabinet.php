@@ -312,7 +312,7 @@ function formatDateRu(string $date): string {
 <body>
 
 <nav>
-  <a href="/index.php" class="logo">👟 <span>Shoe</span>Shop</a>
+  <a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
   <div class="nav-links">
     <a href="/catalog.php">Каталог</a>
     <?php if ($user['role'] === 'admin'): ?>
