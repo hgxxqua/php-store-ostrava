@@ -1,6 +1,4 @@
 <?php
-// hello hi 
-// here is a main functions for all shop
 require_once("db.php");
 
 
@@ -33,12 +31,13 @@ if($checklogin == true){
     $_SESSION["email"] = $emaildb;
     $_SESSION["role"] = "user";
     $_SESSION["login-in"] = "true";
-    
 
 
 }else if(!$checklogin){
-    echo"Ten login jest juz zajety";
-}  
+    $_SESSION["error"] = "Ten login jest już zajęty";
+    header("Location: register.php");
+    exit();
+}
 
 }
 
@@ -50,6 +49,7 @@ if($check['count']>0){
     return false;
 }else if($check['count']== 0){
     return true;
+    header("Location: index.php");
 }
 }
 ?>
