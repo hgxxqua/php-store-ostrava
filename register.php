@@ -156,7 +156,7 @@ a:hover {
 </div>
 
 <div class="blok-dla-knopki">
-    <input type="submit" class="knopka-dla-rega"  value="Rejestruj się" required=""></button>
+    <input type="submit" class="knopka-dla-rega"  value="Rejestruj się"></input>
     </div>  
                     
                   <div class="rejestracja">
