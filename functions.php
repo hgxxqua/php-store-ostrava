@@ -56,6 +56,39 @@ function adminExists(){
     return $result['count'] > 0;
 }
 
+// Возвращает товары с фильтром по brand, category или search (берёт из $_GET)
+function getFilteredProducts(){
+    $db = polacz_z_baza();
+    $sql = "SELECT * FROM products";
+
+    $where = [];
+
+    if(!empty($_GET['brand'])){
+        $v = mysqli_real_escape_string($db, $_GET['brand']);
+        $where[] = "brand = '$v'";
+    }
+    if(!empty($_GET['category'])){
+        $v = mysqli_real_escape_string($db, $_GET['category']);
+        $where[] = "category = '$v'";
+    }
+    if(!empty($_GET['q'])){
+        $v = mysqli_real_escape_string($db, $_GET['q']);
+        $where[] = "name LIKE '%$v%'";
+    }
+
+    if($where) $sql .= " WHERE " . implode(" AND ", $where);
+
+    $sql .= " ORDER BY id DESC";
+    return mysqli_query($db, $sql);
+}
+
+// Возвращает один товар по id; если не найден — возвращает null
+function getProductById($id){
+    $db = polacz_z_baza();
+    $id = (int)$id;
+    return mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM products WHERE id = $id LIMIT 1"));
+}
+
 // Проверяет свободен ли логин: возвращает true если не занят, false если уже существует
 function checklogin($username, $db){
 
