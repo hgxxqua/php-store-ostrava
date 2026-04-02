@@ -8,7 +8,7 @@
 
       body {
     margin: 0; 
-    background: #0a0a0a; /* Очень темный фон как на сайте */
+    background: #0a0a0a; 
     font-family: Verdana; 
     overflow: hidden;
     margin-top: 15px;
@@ -26,8 +26,8 @@
 .login-box {
     width: 400px;
     padding: 40px;
-    background: #1a1a1a; /* Цвет фона карточки товара (темно-серый) */
-    box-shadow: 0 15px 25px rgba(0,0,0,.8); /* Более глубокая тень */
+    background: #1a1a1a; 
+    box-shadow: 0 15px 25px rgba(0,0,0,.8); 
     border-radius: 10px;
 }
 
@@ -45,7 +45,7 @@
     color: #fff;
     margin-bottom: 30px;
     border: none;
-    border-bottom: 1px solid #444; /* Сделал линию чуть темнее в покое */
+    border-bottom: 1px solid #444; 
     background: transparent;
     outline: none;
 }
@@ -54,43 +54,43 @@
     position: absolute;
     top: 0; left: 0;
     padding: 10px 0;
-    color: #888; /* Серый цвет для неактивного состояния */
+    color: #888; 
     pointer-events: none; 
     transition: .5s; 
 }
 
-/* АНИМАЦИЯ: Когда фокус на поле ИЛИ когда оно не пустое */
+
 .user-box input:focus ~ label,
 .user-box input:valid ~ label {
     top: -17px;
     font-size: 15px;
-    color: #ccff00; /* ТОТ САМЫЙ ЛАЙМОВЫЙ цвет из CS2/Магазина */
+    color: #ccff00; 
 }
 
-/* Линия при фокусе тоже становится лаймовой */
+
 .user-box input:focus {
     border-bottom: 1px solid #ccff00;
 }
 
 .rejestracja {
     text-align: center;
-    color: #888; /* Текст "Нет аккаунта" серым */
+    color: #888; 
 }
 
 a {
     text-decoration: none;
-    color: #ccff00; /* Ссылка "Регистрация" лаймовым */
+    color: #ccff00;
     font-weight: bold;
 }
 
 a:hover {
-    color: #fff; /* При наведении на ссылку — белым */
+    color: #fff; 
 }
     </style>
 </head>
 <body>
     <?php
-    require_once('functions.php')
+    require_once('functions.php');
     
     $username = $_POST['username'];
     $password = $_POST['password'];
@@ -102,19 +102,23 @@ a:hover {
 
 
     <a href="#"><h2 style="color:white">Back</h2></a>
-    <a href="login.php"><h2 style="color:white">Back</h2></a>
     <div class="glowa">
         <div class="login-box">
             <h2>Rejestracja</h2>
-            <form>
+            <form method='POST' action=''>
                 <div class="user-box">
-                    <input type="text" name="Login" required="">
+                    <input type="text" name="username" required="">
                     <label>Username</label>
                 </div>
                 <div class="user-box">
-                    <input type="password" name="Hasło" required="">
+                    <input type="password" name="password" required="">
                     <label>Password</label>
 
+                    <div class="user-box">
+
+<input type="email" name="email" required="">
+<label>Email</label>
+</div>
                     
                     <div class="rejestracja">
                         Już masz konto? <a href="login.php">Login</a>
