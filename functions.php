@@ -9,9 +9,34 @@ $db = polacz_z_baza();
 }
 
 
-
-function registration($username, $password, $email){
+function registration($usernamedb, $passworddb, $emaildb){
 $db = polacz_z_baza();
-$sql = "INSERT INTO users ('id', 'name' , 'email', 'role',)";
+
+$checklogin = checklogin($usernamedb,$db);
+if($checklogin == true){
+
+    mysqli_query($db,"INSERT INTO users (name , email, password , role) VALUES ('$usernamedb', '$emaildb', '$passworddb', 'user')");
+
+    $_SESSION["username"] = $usernamedb;
+    $_SESSION["email"] = $emaildb;
+    $_SESSION["role"] = "user";
+    $_SESSION["login-in"] = "true";
+    
+
+
+}else if(!$checklogin){
+    echo"Ten login jest juz zajety";
+}  
+
+}
+
+function checklogin($username, $db){
+
+$check = mysqli_fetch_assoc(mysqli_query($db,"SELECT COUNT(*) AS count FROM users WHERE name = '$username'"));
+if($check['count']>0){
+    return false;
+}else if($check['count']== 0){
+    return true;
+}
 }
 ?>

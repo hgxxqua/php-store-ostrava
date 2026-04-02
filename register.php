@@ -89,6 +89,18 @@ a:hover {
     </style>
 </head>
 <body>
+    <?php
+    require_once('functions.php')
+    
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $email = $_POST['email'];
+
+    ?>
+
+
+
+
     <a href="#"><h2 style="color:white">Back</h2></a>
     <div class="glowa">
         <div class="login-box">
@@ -102,17 +114,10 @@ a:hover {
                     <input type="password" name="Hasło" required="">
                     <label>Password</label>
 
-                    <div class="user-box">
-                    <input type="password" name="Hasło" required="">
-                    <label>Repeat Password</label>
-
-
-
+                    
                     <div class="rejestracja">
-
                         Już masz konto? <a href="login.php">Login</a>
                        </div>
-                </div>
             </form>
         </div>
     </div>
