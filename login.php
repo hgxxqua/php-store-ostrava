@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once("functions.php");
+require_once __DIR__ . '/functions.php';
 
 // Проверяем, пришла ли форма методом POST
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Login"])) {

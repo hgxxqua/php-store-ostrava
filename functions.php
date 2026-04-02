@@ -1,5 +1,5 @@
 <?php
-require_once("db.php");
+require_once __DIR__ . '/db.php';
 
 
 // Авторизует пользователя по имени и паролю; запускает сессию при успехе
@@ -20,26 +20,38 @@ function login($username, $password){
 
 // Регистрирует нового пользователя и создаёт сессию; выводит сообщение если логин занят
 function registration($usernamedb, $passworddb, $emaildb){
-$db = polacz_z_baza();
+    $db = polacz_z_baza();
 
-$checklogin = checklogin($usernamedb,$db);
-if($checklogin == true){
+    // Защита от спецсимволов
+    $u = mysqli_real_escape_string($db, $usernamedb);
+    $p = mysqli_real_escape_string($db, $passworddb);
+    $e = mysqli_real_escape_string($db, $emaildb);
 
-    mysqli_query($db,"INSERT INTO users (name , email, password , role) VALUES ('$usernamedb', '$emaildb', '$passworddb', 'user')");
+    $is_free = checklogin($u, $db);
 
-    $_SESSION["username"] = $usernamedb;
-    $_SESSION["email"] = $emaildb;
-    $_SESSION["role"] = "user";
-    $_SESSION["login-in"] = "true";
-    header("Location: index.php");
-    exit();    
+    if($is_free){
+        // ВАЖНО: Добавил created_at и CURDATE(), иначе база отклоняет запрос
+        $sql = "INSERT INTO users (name, email, password, role, created_at) 
+                VALUES ('$u', '$e', '$p', 'user', CURDATE())";
+        
+        $res = mysqli_query($db, $sql);
 
-}else if(!$checklogin){
-    $_SESSION["error"] = "Ten login jest już zajęty";
-    header("Location: register.php");
-    exit();
-}
-
+        if($res){
+            $_SESSION["username"] = $usernamedb;
+            $_SESSION["email"] = $emaildb;
+            $_SESSION["role"] = "user";
+            $_SESSION["login-in"] = "true";
+            header("Location: index.php");
+            exit();    
+        } else {
+            // Если снова не сработает, эта строка покажет реальную причину
+            die("Ошибка MySQL: " . mysqli_error($db));
+        }
+    } else {
+        $_SESSION["error"] = "Ten login jest już zajęty";
+        header("Location: register.php");
+        exit();
+    }
 }
 
 // Проверяет является ли текущий пользователь сессии администратором
@@ -53,18 +65,20 @@ function isAdmin(){
 function adminExists(){
     $db = polacz_z_baza();
     $result = mysqli_fetch_assoc(mysqli_query($db, "SELECT COUNT(*) AS count FROM users WHERE role = 'admin'"));
+
+
+
     return $result['count'] > 0;
 }
 
 // Проверяет свободен ли логин: возвращает true если не занят, false если уже существует
 function checklogin($username, $db){
-
-$check = mysqli_fetch_assoc(mysqli_query($db,"SELECT COUNT(*) AS count FROM users WHERE name = '$username'"));
-if($check['count']>0){
-    return false;
-}else if($check['count']== 0){
-    return true;
-    header("Location: index.php");
-}
+    $u = mysqli_real_escape_string($db, $username);
+    $res = mysqli_query($db, "SELECT id FROM users WHERE name = '$u' LIMIT 1");
+    
+    if(mysqli_num_rows($res) > 0){
+        return false; // Занят
+    }
+    return true; // Свободен
 }
 ?>

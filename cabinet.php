@@ -4,7 +4,7 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: login.php'); exit;
 }
 
-require_once 'db.php';
+require_once __DIR__ . '/db.php';
 $conn = polacz_z_baza();
 
 // Берём пользователя из БД
