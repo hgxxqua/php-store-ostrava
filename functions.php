@@ -31,12 +31,12 @@ if($checklogin == true){
     $_SESSION["email"] = $emaildb;
     $_SESSION["role"] = "user";
     $_SESSION["login-in"] = "true";
-    header("Location: /php-store-ostrava/index.php");
+    header("Location: index.php");
     exit();    
 
 }else if(!$checklogin){
     $_SESSION["error"] = "Ten login jest już zajęty";
-    header("Location:  /php-store-ostrava/register.php");
+    header("Location: register.php");
     exit();
 }
 

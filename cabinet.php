@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['user_id'])) {
-    header('Location: /login.php'); exit;
+    header('Location: login.php'); exit;
 }
 
 require_once 'db.php';
@@ -14,7 +14,7 @@ $user = mysqli_fetch_assoc($res);
 
 if (!$user) {
     session_destroy();
-    header('Location: /login.php'); exit;
+    header('Location: login.php'); exit;
 }
 
 // Берём заказы пользователя с товарами
@@ -314,17 +314,17 @@ function formatDateRu(string $date): string {
 <nav>
   <a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
   <div class="nav-links">
-    <a href="/catalog.php">Каталог</a>
+    <a href="catalog.php">Каталог</a>
     <?php if ($user['role'] === 'admin'): ?>
-      <a href="/admin.php" style="color:#ff2d78;font-weight:600;">⚡ Админ</a>
+      <a href="admin.php" style="color:#ff2d78;font-weight:600;">⚡ Админ</a>
     <?php endif; ?>
   </div>
   <div class="nav-right">
-    <a href="/cart.php" class="cart-btn">
+    <a href="cart.php" class="cart-btn">
       Корзина <span class="cart-badge">0</span>
     </a>
     <span class="greeting">Привет, <?= htmlspecialchars($user['name']) ?></span>
-    <a href="/logout.php" class="btn-logout">Выйти</a>
+    <a href="logout.php" class="btn-logout">Выйти</a>
   </div>
 </nav>
 
@@ -337,13 +337,13 @@ function formatDateRu(string $date): string {
       <span class="role-badge"><?= htmlspecialchars($user['role']) ?></span>
     </div>
     <nav class="sidebar-menu">
-      <a href="/cabinet.php" class="menu-item active">
+      <a href="cabinet.php" class="menu-item active">
         <span class="icon">📦</span> Мои заказы
       </a>
-      <a href="/settings.php" class="menu-item">
+      <a href="settings.php" class="menu-item">
         <span class="icon">⚙️</span> Настройки
       </a>
-      <a href="/logout.php" class="menu-item">
+      <a href="logout.php" class="menu-item">
         <span class="icon">🚪</span> Выйти
       </a>
     </nav>
