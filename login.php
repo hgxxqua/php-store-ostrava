@@ -1,3 +1,10 @@
+<?php
+session_start();
+require_once("functions.php");
+if(isset($_POST["Login"])){
+    login($_POST["Login"], $_POST["Haslo"]);
+}
+?>
 <!DOCTYPE html>
 <html lang="pl">
 <head>
@@ -118,13 +125,13 @@ a:hover {
 
     <a href="index.php"><h2 style="color:white">Back</h2></a>
     
-    <div class="glowa">
+    <div class="g method="POST" action="login.php"lowa">
         <div class="login-box">
             <h2>Login</h2>
             <form>
                 <div class="user-box">
                     <input type="text" name="Login" required="">
-                    <label>Username</label>
+                    <label>Username</label>l
                 </div>
                 <div class="user-box">
                     <input type="password" name="Hasło" required="">
