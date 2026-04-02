@@ -15,7 +15,7 @@ include "product.php";
 </div>
         <div class="navbar">
             <ul>
-                <li><a href="#">Home</a></li>
+                <li><a href="#">Home YEHOR PIDARAs</a></li>
                 <li><a href="#">Products</a></li>
                 <li><a href="#">Contact</a></li>
             </ul>
