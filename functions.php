@@ -42,6 +42,20 @@ if($checklogin == true){
 
 }
 
+// Проверяет является ли текущий пользователь сессии администратором
+// Возвращает true если role === 'admin', иначе false
+function isAdmin(){
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+}
+
+// Проверяет существует ли хотя бы один администратор в базе данных
+// Используется чтобы показать кнопку создания первого админа если его ещё нет
+function adminExists(){
+    $db = polacz_z_baza();
+    $result = mysqli_fetch_assoc(mysqli_query($db, "SELECT COUNT(*) AS count FROM users WHERE role = 'admin'"));
+    return $result['count'] > 0;
+}
+
 // Проверяет свободен ли логин: возвращает true если не занят, false если уже существует
 function checklogin($username, $db){
 

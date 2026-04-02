@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿<?php
+session_start();
+require_once("functions.php");
+?>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -23,8 +27,12 @@
         <a href="cart.php">Cart</a>
     </div>
     <div class="auth">
-        <a href="#" >Contact</a>
-        <a href="#" >|</a>
+        <a href="#">Contact</a>
+        <a href="#">|</a>
+        <?php /* if(isAdmin()): ?>
+            <a href="admin.php">Admin Panel</a>
+            <a href="#">|</a>
+        <?php endif; */ ?>
         <a href="login.php">Login</a>
     </div>
 </header>
