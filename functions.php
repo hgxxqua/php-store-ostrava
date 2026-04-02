@@ -89,6 +89,89 @@ function getProductById($id){
     return mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM products WHERE id = $id LIMIT 1"));
 }
 
+// =============================================
+// ФУНКЦИИ АДМИН ПАНЕЛИ
+// =============================================
+
+// Добавляет новый товар в БД; сохраняет фото в uploads/ если загружено (только JPG/PNG)
+// Требует колонку: ALTER TABLE products ADD COLUMN image varchar(255) DEFAULT '';
+function addProduct(){
+    $db       = polacz_z_baza();
+    $name     = $_POST['name'];
+    $desc     = $_POST['desc'];
+    $price    = (int)$_POST['price'];
+    $size     = $_POST['size'];
+    $brand    = $_POST['brand'];
+    $category = $_POST['category'];
+    $stock    = (int)$_POST['stock'];
+    if(!$name || $price <= 0) return;
+    $name = mysqli_real_escape_string($db, $name);
+    $desc = mysqli_real_escape_string($db, $desc);
+    $size = mysqli_real_escape_string($db, $size);
+    $brand = mysqli_real_escape_string($db, $brand);
+    $category = mysqli_real_escape_string($db, $category);
+    $image = '';
+    if(!empty($_FILES['image']['name'])){
+        $allowed = ['image/jpeg','image/png'];
+        $mime    = mime_content_type($_FILES['image']['tmp_name']);
+        if(in_array($mime, $allowed)){
+            $ext   = $mime === 'image/png' ? 'png' : 'jpg';
+            $image = uniqid('prod_') . '.' . $ext;
+            move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/uploads/' . $image);
+        }
+    }
+    $image = mysqli_real_escape_string($db, $image);
+    mysqli_query($db, "INSERT INTO products (name,description,price,size,brand,category,stock,image)
+        VALUES ('$name','$desc',$price,'$size','$brand','$category',$stock,'$image')");
+}
+
+// Обновляет данные товара по id; заменяет фото если загружено новое
+function updateProduct($id){
+    $db       = polacz_z_baza();
+    $id       = (int)$id;
+    $name     = $_POST['name'];
+    $desc     = $_POST['desc'];
+    $price    = (int)$_POST['price'];
+    $size     = $_POST['size'];
+    $brand    = $_POST['brand'];
+    $category = $_POST['category'];
+    $stock    = (int)$_POST['stock'];
+    $name = mysqli_real_escape_string($db, $name);
+    $desc = mysqli_real_escape_string($db, $desc);
+    $size = mysqli_real_escape_string($db, $size);
+    $brand = mysqli_real_escape_string($db, $brand);
+    $category = mysqli_real_escape_string($db, $category);
+    $imageSQL = '';
+    if(!empty($_FILES['image']['name'])){
+        $allowed = ['image/jpeg','image/png'];
+        $mime    = mime_content_type($_FILES['image']['tmp_name']);
+        if(in_array($mime, $allowed)){
+            $ext      = $mime === 'image/png' ? 'png' : 'jpg';
+            $filename = uniqid('prod_') . '.' . $ext;
+            move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/uploads/' . $filename);
+            $filename = mysqli_real_escape_string($db, $filename);
+            $imageSQL = ", image='$filename'";
+        }
+    }
+    mysqli_query($db, "UPDATE products SET
+        name='$name', description='$desc', price=$price,
+        size='$size', brand='$brand', category='$category', stock=$stock $imageSQL
+        WHERE id=$id");
+}
+
+// Удаляет товар из БД по id
+function deleteProduct($id){
+    $db = polacz_z_baza();
+    $id = (int)$id;
+    mysqli_query($db, "DELETE FROM products WHERE id = $id");
+}
+
+// Возвращает все товары из БД для списка в админке
+function getAllProducts(){
+    $db = polacz_z_baza();
+    return mysqli_query($db, "SELECT * FROM products ORDER BY id DESC");
+}
+
 // Проверяет свободен ли логин: возвращает true если не занят, false если уже существует
 function checklogin($username, $db){
 

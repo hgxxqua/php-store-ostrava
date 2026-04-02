@@ -86,6 +86,9 @@ function buildUrl($key, $value){
     <div class="products">
         <?php $products = getFilteredProducts(); while($p = mysqli_fetch_assoc($products)): ?>
         <a href="product.php?id=<?= $p['id'] ?>" class="product-card">
+            <?php if(!empty($p['image']) && file_exists(__DIR__.'/uploads/'.$p['image'])): ?>
+                <img src="uploads/<?= htmlspecialchars($p['image']) ?>" class="product-card-img" alt="<?= htmlspecialchars($p['name']) ?>">
+            <?php endif; ?>
             <span class="product-category"><?= htmlspecialchars($p['category']) ?></span>
             <h3><?= htmlspecialchars($p['name']) ?></h3>
             <p class="price"><?= $p['price'] ?> zl</p>

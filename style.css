@@ -233,3 +233,86 @@ footer {
     border-top: 1px solid #333;
     margin-top: 24px;
 }
+
+/* Фото товара в карточке на главной */
+.product-card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+/* Страница товара */
+.product-detail {
+    display: flex;
+    gap: 40px;
+    padding: 32px;
+    align-items: flex-start;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.product-detail-img {
+    width: 360px;
+    height: 360px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #333;
+    flex-shrink: 0;
+}
+
+.product-detail-info { flex: 1; }
+
+.product-detail-info h1 {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+.product-detail-info .price {
+    color: #ccff00;
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
+
+.product-detail-info .description {
+    color: #888;
+    font-size: 13px;
+    margin-bottom: 14px;
+    line-height: 1.6;
+}
+
+.product-detail-info .product-meta {
+    color: #555;
+    font-size: 12px;
+    margin-bottom: 6px;
+}
+
+.btn-back {
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 20px 32px;
+    color: #ccff00;
+    text-decoration: none;
+    border: 1px solid #ccff00;
+    border-radius: 6px;
+    font-size: 13px;
+}
+
+.btn-back:hover { background: #ccff00; color: #000; }
+
+.btn-view {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 22px;
+    background: #ccff00;
+    color: #000;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+.btn-view:hover { background: #aadd00; }

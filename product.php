@@ -29,6 +29,9 @@ if(!$product){ header("Location: index.php"); exit; }
     <a href="index.php" class="btn-back">← Back</a>
 
     <div class="product-detail">
+        <?php if(!empty($product['image']) && file_exists(__DIR__.'/uploads/'.$product['image'])): ?>
+            <img src="uploads/<?= htmlspecialchars($product['image']) ?>" class="product-detail-img" alt="<?= htmlspecialchars($product['name']) ?>">
+        <?php endif; ?>
         <div class="product-detail-info">
             <span class="product-category"><?= htmlspecialchars($product['category']) ?></span>
             <h1><?= htmlspecialchars($product['name']) ?></h1>
