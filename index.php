@@ -44,7 +44,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
         <?php if(!empty($_SESSION['login-in'])): ?>
             <span style="color:#ccc"><?= htmlspecialchars($_SESSION['username']) ?></span>
             <a href="#">|</a>
-            <a href="?action=logout">Logout</a>
+            <a href="logout.php">Logout</a>
         <?php else: ?>
             <a href="#" onclick="document.getElementById('login-modal').classList.add('open'); return false;">Login</a>
         <?php endif; ?>
