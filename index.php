@@ -29,15 +29,21 @@ require_once __DIR__ . '/functions.php';
     <div class="auth">
         <a href="#">Contact</a>
         <a href="#">|</a>
-        <?php if(isAdmin()){
-            <a href="admin.php">Admin Panel</a>
-            <a href="#">|</a>
-             }: 
-?>
-            
-
-        <?php endif;  ?>
-        <a href="login.php">Login</a>
+        <?php 
+        if(isAdmin()){
+           echo '<a href="admin.php">Admin Panel</a>';
+           echo '<a href="#">|</a>';
+        }                                 
+        if(isset($_SESSION["login-in"]) && $_SESSION["login-in"] == "true"){
+            echo '<a href="cabinet.php">Cabinet</a>';
+            echo '<a href="#">|</a>';
+            echo '<a href="logout.php">Logout</a>';
+            echo '<a href="#">|</a>';
+        } else {
+            echo '<a href="login.php">Login</a>';
+            echo '<a href="#">|</a>';
+        } 
+        ?>
     </div>
 </header>
 

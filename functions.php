@@ -81,4 +81,14 @@ function checklogin($username, $db){
     }
     return true; // Свободен
 }
+
+
+function loginstatus(){
+if($_SESSION["login-in"] == true){
+    return true;
+}else{
+    return false;
+}
+}
+
 ?>
