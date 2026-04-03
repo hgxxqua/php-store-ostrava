@@ -10,13 +10,21 @@ function login($username, $password){
         $_SESSION["username"] = $result["name"];
         $_SESSION["email"]    = $result["email"];
         $_SESSION["role"]     = $result["role"];
-        $_SESSION["login-in"] = "true";
-        header("Location: index.php");
+        $_SESSION["login-in"] = true;
+        header("Location: main.php");
         exit;
     } else {
         echo "<p style='color:red;text-align:center'>Nieprawidłowy login lub hasło</p>";
     }
 }
+
+
+
+
+
+
+
+
 
 // Регистрирует нового пользователя и создаёт сессию; выводит сообщение если логин занят
 function registration($usernamedb, $passworddb, $emaildb){
@@ -40,8 +48,8 @@ function registration($usernamedb, $passworddb, $emaildb){
             $_SESSION["username"] = $usernamedb;
             $_SESSION["email"] = $emaildb;
             $_SESSION["role"] = "user";
-            $_SESSION["login-in"] = "true";
-            header("Location: index.php");
+            $_SESSION["login-in"] = true;
+            header("Location: main.php");
             exit();    
         } else {
             // Если снова не сработает, эта строка покажет реальную причину

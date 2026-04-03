@@ -1,7 +1,14 @@
 <?php 
 session_start();
 require_once __DIR__ . '/functions.php';
+if (!isset($_SESSION["login-in"])) {
+    $_SESSION["username"] = "";
+    $_SESSION["email"]    = "";
+    $_SESSION["role"]     = "user";
+    $_SESSION["login-in"] = false; 
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +22,6 @@ require_once __DIR__ . '/functions.php';
        *{
 margin: 0;
 padding: 0;
-
 
   font-family: "Trispace", sans-serif;
   font-optical-sizing: auto;
@@ -43,15 +49,22 @@ padding: 0;
         background-color: #ccff00;
         color: black; 
        }
-
-
-
-
     </style>
+
 </head>
 <body>
     <header>
-        <a href ="main.php">Cl1ck here if y0u n9ed swag</a>
-    </header>
+    <a href="main.php">Cl1ck here if y0u n9ed swag</a>
+    
+    <div style="color: white; background: #222; padding: 20px; margin-left: 20px; border: 1px dashed #ccff00;">
+        <h3>Debug Session:</h3>
+        <?php
+            echo '<pre>';
+            // Выводим ВЕСЬ массив, а не только один ключ
+            print_r($_SESSION); 
+            echo '</pre>';
+        ?>
+    </div>
+</header>
 </body>
 </html>

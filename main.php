@@ -1,4 +1,5 @@
 ﻿<?php
+session_start();
 require_once __DIR__ . '/functions.php';
 ?>
 <!DOCTYPE html>
@@ -31,12 +32,12 @@ require_once __DIR__ . '/functions.php';
            echo '<a href="admin.php">Admin Panel</a>';
            echo '<a href="#">|</a>';
         }                                 
-        if(isset($_SESSION["login-in"]) && $_SESSION["login-in"] == "true"){
+        if($_SESSION["login-in"] == true){
             echo '<a href="cabinet.php">Cabinet</a>';
             echo '<a href="#">|</a>';
             echo '<a href="logout.php">Logout</a>';
             echo '<a href="#">|</a>';
-        } else {
+        } else if($_SESSION["login-in"] == false){
             echo '<a href="login.php">Login</a>';
             echo '<a href="#">|</a>';
         } 
