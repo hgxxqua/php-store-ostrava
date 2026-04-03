@@ -29,9 +29,13 @@ require_once __DIR__ . '/functions.php';
     <div class="auth">
         <a href="#">Contact</a>
         <a href="#">|</a>
-        <?php if(isAdmin()): ?>
+        <?php if(isAdmin()){
             <a href="admin.php">Admin Panel</a>
             <a href="#">|</a>
+             }: 
+?>
+            
+
         <?php endif;  ?>
         <a href="login.php">Login</a>
     </div>
