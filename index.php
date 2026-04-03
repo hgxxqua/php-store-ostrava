@@ -36,7 +36,7 @@ require_once __DIR__ . '/functions.php';
         <?php if(!empty($_SESSION['login-in'])): ?>
             <span style="color:#ccc"><?= htmlspecialchars($_SESSION['username']) ?></span>
             <a href="#">|</a>
-            <a href="index.php">Logout</a>
+            <a href="logout.php">Logout</a>
         <?php else: ?>
             <a href="login.php">Login</a>
         <?php endif; ?>
