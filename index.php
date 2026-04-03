@@ -1,6 +1,14 @@
 ﻿<?php
 session_start();
 require_once __DIR__ . '/functions.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'login') {
+    login($_POST['username'] ?? '', $_POST['password'] ?? '');
+}
+
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    logout();
+}
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -36,9 +44,9 @@ require_once __DIR__ . '/functions.php';
         <?php if(!empty($_SESSION['login-in'])): ?>
             <span style="color:#ccc"><?= htmlspecialchars($_SESSION['username']) ?></span>
             <a href="#">|</a>
-            <a href="index.php">Logout</a>
+            <a href="?action=logout">Logout</a>
         <?php else: ?>
-            <a href="login.php">Login</a>
+            <a href="#" onclick="document.getElementById('login-modal').classList.add('open'); return false;">Login</a>
         <?php endif; ?>
     </div>
 </header>
@@ -113,6 +121,32 @@ function buildUrl($key, $value){
 <footer>
     <p>&copy; 2026 ShoeShop Ostrava</p>
 </footer>
+
+<div id="login-modal" class="modal-overlay">
+    <div class="modal-box">
+        <button class="modal-close" onclick="document.getElementById('login-modal').classList.remove('open')">&times;</button>
+        <h2>Login</h2>
+        <?php if(!empty($_SESSION['error'])): ?>
+            <div class="modal-error"><?= htmlspecialchars($_SESSION['error']) ?></div>
+            <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
+        <form method="POST" action="index.php">
+            <input type="hidden" name="action" value="login">
+            <div class="modal-field">
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="modal-field">
+                <input type="password" name="password" placeholder="Password" required>
+            </div>
+            <div class="modal-submit">
+                <button type="submit">Zaloguj się</button>
+            </div>
+        </form>
+        <div class="modal-register">
+            Nie masz konta? <a href="register.php">Załóż konto</a>
+        </div>
+    </div>
+</div>
 
 </body>
 </html>

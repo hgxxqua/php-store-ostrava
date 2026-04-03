@@ -2,20 +2,14 @@
 require_once __DIR__ . '/db.php';
 
 
-// Авторизует пользователя по имени и паролю; запускает сессию при успехе
+// TODO: авторизация пользователя
 function login($username, $password){
-    $db = polacz_z_baza();
-    $result = mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM users WHERE name = '$username' AND password = '$password' LIMIT 1"));
-    if($result){
-        $_SESSION["username"] = $result["name"];
-        $_SESSION["email"]    = $result["email"];
-        $_SESSION["role"]     = $result["role"];
-        $_SESSION["login-in"] = "true";
-        header("Location: index.php");
-        exit;
-    } else {
-        echo "<p style='color:red;text-align:center'>Nieprawidłowy login lub hasło</p>";
-    }
+    // stub
+}
+
+// TODO: выход пользователя из сессии
+function logout(){
+    // stub
 }
 
 // Регистрирует нового пользователя и создаёт сессию; выводит сообщение если логин занят
