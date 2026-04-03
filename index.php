@@ -23,9 +23,7 @@ require_once __DIR__ . '/functions.php';
             
         </ul>
     </nav>
-    <div class="cart">
-        <a href="cart.php">Cart</a>
-    </div>
+    
     <div class="auth">
         <a href="#">Contact</a>
         <a href="#">|</a>
@@ -34,6 +32,7 @@ require_once __DIR__ . '/functions.php';
             <a href="#">|</a>
         <?php endif;  ?>
         <a href="login.php">Login</a>
+        <a href="cart.php" style ="color: white;">Cart</a>
     </div>
 </header>
 

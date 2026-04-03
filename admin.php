@@ -252,7 +252,7 @@ cursor:pointer;
 
 <span class="product-name"><?=htmlspecialchars($p['name'])?></span>
 
-<span class="product-price"><?=$p['price']?> ₽</span>
+<span class="product-price"><?=$p['price']?> </span>
 
 <form method="POST">
 
