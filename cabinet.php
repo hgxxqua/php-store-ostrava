@@ -2,7 +2,7 @@
 session_start();
 
 
-if (!isset($_SESSION['user_id'])) {
+if (!isset($_SESSION['login-in']) || $_SESSION['login-in'] == false) {
     header('Location: login.php'); exit;
 }
 
@@ -10,9 +10,11 @@ require_once __DIR__ . '/db.php';
 $conn = polacz_z_baza();
 
 // Берём пользователя из БД
-$id   = (int)$_SESSION['user_id'];
-$res  = mysqli_query($conn, "SELECT * FROM users WHERE id = $id");
-$user = mysqli_fetch_assoc($res);
+$username = mysqli_real_escape_string($conn, $_SESSION['username']);
+$user_res = mysqli_query($conn, "SELECT * FROM users WHERE name = '$username'");
+$user = mysqli_fetch_assoc($user_res);
+$id = $user['id'] ?? 0;
+
 
 if (!$user) {
     session_destroy();
