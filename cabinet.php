@@ -9,7 +9,7 @@ if (!isset($_SESSION['login-in']) || $_SESSION['login-in'] == false) {
 require_once __DIR__ . '/db.php';
 $conn = polacz_z_baza();
 
-// Берём пользователя из БД
+// uzytkownik z bd
 $username = mysqli_real_escape_string($conn, $_SESSION['username']);
 $user_res = mysqli_query($conn, "SELECT * FROM users WHERE name = '$username'");
 $user = mysqli_fetch_assoc($user_res);
@@ -53,7 +53,7 @@ function formatDatePl(string $date): string {
 
 ?>
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="pl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -361,11 +361,11 @@ function formatDatePl(string $date): string {
         <div class="order-card">
           <div class="order-header">
             <span class="order-id">Zamowienie #<?= $order['id'] ?></span>
-            <span class="order-date"><?= formatDateRu($order['created_at']) ?></span>
+            <span class="order-date"><?= formatDatePl($order['created_at']) ?></span>
           </div>
           <div class="order-product"><?= htmlspecialchars($order['products']) ?></div>
           <div class="order-total">
-            Suma: <?= number_format($order['total'], 0, '.', ' ') ?> zl
+            Suma: <?= number_format($order['total'], 0, '.', ' ') ?> zl 
           </div>
           <div class="order-status">
             <span class="status-badge delivered">Paka dostarczona</span>
