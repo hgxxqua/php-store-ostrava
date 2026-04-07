@@ -1,11 +1,13 @@
 <?php
 require_once __DIR__ . '/db.php';
 
-
-// Авторизует пользователя по имени и паролю; запускает сессию при успехе
+// Autoryzuje użytkownika i uruchamia sesję
 function login($username, $password){
     $db = polacz_z_baza();
-    $result = mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM users WHERE name = '$username' AND password = '$password' LIMIT 1"));
+    $u = mysqli_real_escape_string($db, $username);
+    $p = mysqli_real_escape_string($db, $password);
+    
+    $result = mysqli_fetch_assoc(mysqli_query($db, "SELECT * FROM users WHERE name = '$u' AND password = '$p' LIMIT 1"));
     if($result){
         $_SESSION["username"] = $result["name"];
         $_SESSION["email"]    = $result["email"];
@@ -18,42 +20,20 @@ function login($username, $password){
     }
 }
 
-
-
-
-
-
-
-
-
-// Регистрирует нового пользователя и создаёт сессию; выводит сообщение если логин занят
+// Rejestruje nowego użytkownika
 function registration($usernamedb, $passworddb, $emaildb){
     $db = polacz_z_baza();
-
-    // Защита от спецсимволов
     $u = mysqli_real_escape_string($db, $usernamedb);
     $p = mysqli_real_escape_string($db, $passworddb);
     $e = mysqli_real_escape_string($db, $emaildb);
 
-    $is_free = checklogin($u, $db);
-
-    if($is_free){
-        // ВАЖНО: Добавил created_at и CURDATE(), иначе база отклоняет запрос
+    if(checklogin($u, $db)){
         $sql = "INSERT INTO users (name, email, password, role, created_at) 
                 VALUES ('$u', '$e', '$p', 'user', CURDATE())";
-        
-        $res = mysqli_query($db, $sql);
-
-        if($res){
-            $_SESSION["username"] = $usernamedb;
-            $_SESSION["email"] = $emaildb;
-            $_SESSION["role"] = "user";
-            $_SESSION["login-in"] = true;
-            header("Location: main.php");
-            exit();    
+        if(mysqli_query($db, $sql)){
+            login($usernamedb, $passworddb);
         } else {
-            // Если снова не сработает, эта строка покажет реальную причину
-            die("Ошибка MySQL: " . mysqli_error($db));
+            die("Błąd MySQL: " . mysqli_error($db));
         }
     } else {
         $_SESSION["error"] = "Ten login jest już zajęty";
@@ -62,41 +42,77 @@ function registration($usernamedb, $passworddb, $emaildb){
     }
 }
 
-// Проверяет является ли текущий пользователь сессии администратором
-// Возвращает true если role === 'admin', иначе false
+// Pobiera produkty z filtrowaniem
+function getProducts($category = null, $brand = null, $search = null) {
+    $db = polacz_z_baza();
+    $sql = "SELECT * FROM products WHERE stock > 0";
+    
+    if ($category) $sql .= " AND category = '" . mysqli_real_escape_string($db, $category) . "'";
+    if ($brand)    $sql .= " AND brand = '" . mysqli_real_escape_string($db, $brand) . "'";
+    if ($search)   $sql .= " AND (name LIKE '%" . mysqli_real_escape_string($db, $search) . "%' OR description LIKE '%" . mysqli_real_escape_string($db, $search) . "%')";
+    
+    $sql .= " ORDER BY id DESC";
+    return mysqli_query($db, $sql);
+}
+
+// Zarządzanie koszykiem (dodawanie)
+function addToCart($productId) {
+    if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
+    
+    if (isset($_SESSION['cart'][$productId])) {
+        $_SESSION['cart'][$productId]++;
+    } else {
+        $_SESSION['cart'][$productId] = 1;
+    }
+}
+
+// Składanie zamówienia
+function placeOrder() {
+    if (empty($_SESSION['cart'])) return false;
+    
+    $db = polacz_z_baza();
+    $username = mysqli_real_escape_string($db, $_SESSION['username']);
+    $user_res = mysqli_query($db, "SELECT id FROM users WHERE name = '$username'");
+    $user = mysqli_fetch_assoc($user_res);
+    $userId = $user['id'];
+    
+    $total = 0;
+    $items = [];
+    
+    foreach ($_SESSION['cart'] as $id => $qty) {
+        $res = mysqli_query($db, "SELECT price, stock FROM products WHERE id = $id");
+        $p = mysqli_fetch_assoc($res);
+        if ($p && $p['stock'] >= $qty) {
+            $subtotal = $p['price'] * $qty;
+            $total += $subtotal;
+            $items[] = ['id' => $id, 'qty' => $qty, 'price' => $p['price']];
+        }
+    }
+    
+    if ($total > 0) {
+        mysqli_query($db, "INSERT INTO orders (user_id, total, created_at) VALUES ($userId, $total, CURDATE())");
+        $orderId = mysqli_insert_id($db);
+        
+        foreach ($items as $item) {
+            $pid = $item['id'];
+            $pqty = $item['qty'];
+            $pprice = $item['price'];
+            mysqli_query($db, "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($orderId, $pid, $pqty, $pprice)");
+            mysqli_query($db, "UPDATE products SET stock = stock - $pqty WHERE id = $pid");
+        }
+        
+        unset($_SESSION['cart']);
+        return true;
+    }
+    return false;
+}
+
 function isAdmin(){
     return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 }
 
-// Проверяет существует ли хотя бы один администратор в базе данных
-// Используется чтобы показать кнопку создания первого админа если его ещё нет
-function adminExists(){
-    $db = polacz_z_baza();
-    $result = mysqli_fetch_assoc(mysqli_query($db, "SELECT COUNT(*) AS count FROM users WHERE role = 'admin'"));
-
-
-
-    return $result['count'] > 0;
-}
-
-// Проверяет свободен ли логин: возвращает true если не занят, false если уже существует
 function checklogin($username, $db){
-    $u = mysqli_real_escape_string($db, $username);
-    $res = mysqli_query($db, "SELECT id FROM users WHERE name = '$u' LIMIT 1");
-    
-    if(mysqli_num_rows($res) > 0){
-        return false; // Занят
-    }
-    return true; // Свободен
+    $res = mysqli_query($db, "SELECT id FROM users WHERE name = '$username' LIMIT 1");
+    return mysqli_num_rows($res) == 0;
 }
-
-
-function loginstatus(){
-if($_SESSION["login-in"] == true){
-    return true;
-}else{
-    return false;
-}
-}
-
 ?>

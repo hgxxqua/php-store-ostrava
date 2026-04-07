@@ -64,29 +64,35 @@ require_once __DIR__ . '/functions.php';
 </div>
 
 <main class="main-wrapper">
-
     <div class="products">
-        <div class="product-card">
-            <span class="product-category"></span>
-            <h3></h3>
-            <p class="price"> zl</p>
-            <p class="description"></p>
-            <p class="product-meta">Size:  | Stock: </p>
-            <a href="product.php?id=" class="btn-view">View</a>
-        </div>
+        <?php
+        $cat = $_GET['category'] ?? null;
+        $brand = $_GET['brand'] ?? null;
+        $search = $_GET['q'] ?? null;
+        
+        $products_res = getProducts($cat, $brand, $search);
+        
+        if (mysqli_num_rows($products_res) > 0):
+            while ($p = mysqli_fetch_assoc($products_res)): ?>
+                <div class="product-card">
+                    <span class="product-category"><?= htmlspecialchars($p['category']) ?> | <?= htmlspecialchars($p['brand']) ?></span>
+                    <h3><?= htmlspecialchars($p['name']) ?></h3>
+                    <p class="price"><?= number_format($p['price'], 0, '.', ' ') ?> zl</p>
+                    <p class="description"><?= htmlspecialchars($p['description']) ?></p>
+                    <p class="product-meta">Rozmiar: <?= htmlspecialchars($p['size']) ?> | Sztuk: <?= $p['stock'] ?></p>
+                    
+                    <form method="POST" action="cart.php">
+                        <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
+                        <input type="hidden" name="action" value="add">
+                        <button type="submit" class="btn-view" style="border:none; cursor:pointer; width:100%;">Dodaj do koszyka</button>
+                    </form>
+                </div>
+            <?php endwhile;
+        else: ?>
+            <p class="no-results">Nie znaleziono produktów.</p>
+        <?php endif; ?>
     </div>
-
-    <aside class="categories">
-        <h4>Categories</h4>
-        <a href="index.php"           class="category-btn active">All</a>
-        <a href="?category=Casual"    class="category-btn">Casual</a>
-        <a href="?category=Sport"     class="category-btn">Sport</a>
-        <a href="?category=Formal"    class="category-btn">Formal</a>
-        <a href="?category=Outdoor"   class="category-btn">Outdoor</a>
-        <a href="?category=Party"     class="category-btn">Party</a>
-    </aside>
-
-</main>
+    </main>
 
 <footer>
     <p>&copy; 2026 ShoeShop Ostrava</p>
