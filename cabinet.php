@@ -44,9 +44,9 @@ $initials = mb_strtoupper(
 );
 
 // formatowanie daty po polsku
-function formatDateRu(string $date): string {
-    $months = ['','января','февраля','марта','апреля','мая','июня',
-               'июля','августа','сентября','октября','ноября','декабря'];
+function formatDatePl(string $date): string {
+    $months = ['','stycznia','lutego','marca','kwietnia','maja','czerwca',
+               'lipca','sierpnia','września','października','listopada','grudnia'];
     $d = date_create($date);
     return date_format($d, 'j') . ' ' . $months[(int)date_format($d, 'n')] . ' ' . date_format($d, 'Y');
 }
