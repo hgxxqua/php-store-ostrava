@@ -192,10 +192,4 @@ function checklogin($username, $db){
     return true; // Свободен
 }
 
-
-function logout(){
-    $_SESSION = array(); // Очищаем массив сессии
-    session_destroy();   // Удаляем файл сессии на сервере
-    return "Wylogowano pomyslnie";
-}
 ?>
