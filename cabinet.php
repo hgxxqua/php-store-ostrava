@@ -21,7 +21,7 @@ if (!$user) {
     header('Location: login.php'); exit;
 }
 
-// Берём заказы пользователя с товарами
+// kwerenda do otrzymania zamowienia
 $res_orders = mysqli_query($conn, "
     SELECT
         o.id,
@@ -36,20 +36,21 @@ $res_orders = mysqli_query($conn, "
     ORDER BY o.created_at DESC
 ");
 
-// Инициалы для аватара
+// users name 
 $words    = explode(' ', $user['name']);
 $initials = mb_strtoupper(
     mb_substr($words[0], 0, 1) .
     (isset($words[1]) ? mb_substr($words[1], 0, 1) : '')
 );
 
-// Форматирование даты на русском
+// formatowanie daty po polsku
 function formatDateRu(string $date): string {
     $months = ['','января','февраля','марта','апреля','мая','июня',
                'июля','августа','сентября','октября','ноября','декабря'];
     $d = date_create($date);
     return date_format($d, 'j') . ' ' . $months[(int)date_format($d, 'n')] . ' ' . date_format($d, 'Y');
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="ru">
@@ -318,17 +319,17 @@ function formatDateRu(string $date): string {
 <nav>
   <a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
   <div class="nav-links">
-    <a href="catalog.php">Каталог</a>
+    <a href="catalog.php">Katalog</a>
     <?php if ($user['role'] === 'admin'): ?>
-      <a href="admin.php" style="color:#ff2d78;font-weight:600;">⚡ Админ</a>
+      <a href="admin.php" style="color:#ff2d78;font-weight:600;">⚡ Admin</a>
     <?php endif; ?>
   </div>
   <div class="nav-right">
     <a href="cart.php" class="cart-btn">
-      Корзина <span class="cart-badge">0</span>
+      Koszyk <span class="cart-badge">0</span>
     </a>
-    <span class="greeting">Привет, <?= htmlspecialchars($user['name']) ?></span>
-    <a href="logout.php" class="btn-logout">Выйти</a>
+    <span class="greeting">Hejka, <?= htmlspecialchars($user['name']) ?></span>
+    <a href="logout.php" class="btn-logout">Wyloguj się</a>
   </div>
 </nav>
 
@@ -342,35 +343,32 @@ function formatDateRu(string $date): string {
     </div>
     <nav class="sidebar-menu">
       <a href="cabinet.php" class="menu-item active">
-        <span class="icon">📦</span> Мои заказы
-      </a>
-      <a href="settings.php" class="menu-item">
-        <span class="icon">⚙️</span> Настройки
+        <span class="icon">📦</span> Moje zamowienia 
       </a>
       <a href="logout.php" class="menu-item">
-        <span class="icon">🚪</span> Выйти
+        <span class="icon">🚪</span> Wyloguj się
       </a>
     </nav>
   </aside>
 
   <main class="content">
-    <div class="section-title">Мои заказы</div>
+    <div class="section-title">Wasze zamowienia</div>
 
     <?php if (mysqli_num_rows($res_orders) === 0): ?>
-      <div class="empty-orders">У вас пока нет заказов</div>
+      <div class="empty-orders">Poki co nie masz żadnych zamówień</div>
     <?php else: ?>
       <?php while ($order = mysqli_fetch_assoc($res_orders)): ?>
         <div class="order-card">
           <div class="order-header">
-            <span class="order-id">Заказ #<?= $order['id'] ?></span>
+            <span class="order-id">Zamowienie #<?= $order['id'] ?></span>
             <span class="order-date"><?= formatDateRu($order['created_at']) ?></span>
           </div>
           <div class="order-product"><?= htmlspecialchars($order['products']) ?></div>
           <div class="order-total">
-            Итого: <?= number_format($order['total'], 0, '.', ' ') ?> ₽
+            Suma: <?= number_format($order['total'], 0, '.', ' ') ?> zl
           </div>
           <div class="order-status">
-            <span class="status-badge delivered">Доставлен</span>
+            <span class="status-badge delivered">Paka dostarczona</span>
           </div>
         </div>
       <?php endwhile; ?>
