@@ -160,7 +160,7 @@ a:hover {
     </div>  
                     
                   <div class="rejestracja">
-                        Już masz konto? <a href="login.php">Login</a>
+                        Już masz konto? <a href="index.php?modal=login">Login</a>
                        </div>
             </form>
         </div>

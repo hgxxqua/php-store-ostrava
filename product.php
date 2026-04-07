@@ -21,7 +21,13 @@ if(!$product){ header("Location: index.php"); exit; }
     <div class="auth">
         <a href="cart.php">Cart</a>
         <a href="#">|</a>
-        <a href="login.php">Login</a>
+        <?php if(!empty($_SESSION['login-in'])): ?>
+            <a href="cabinet.php"><?= htmlspecialchars($_SESSION['username']) ?></a>
+            <a href="#">|</a>
+            <a href="logout.php">Logout</a>
+        <?php else: ?>
+            <a href="index.php?modal=login">Login</a>
+        <?php endif; ?>
     </div>
 </header>
 
@@ -29,8 +35,13 @@ if(!$product){ header("Location: index.php"); exit; }
     <a href="index.php" class="btn-back">← Back</a>
 
     <div class="product-detail">
-        <?php if(!empty($product['image']) && file_exists(__DIR__.'/uploads/'.$product['image'])): ?>
-            <img src="uploads/<?= htmlspecialchars($product['image']) ?>" class="product-detail-img" alt="<?= htmlspecialchars($product['name']) ?>">
+        <?php
+            $imgSrc = !empty($product['image'])
+                ? (strpos($product['image'], '/') === false ? 'uploads/' . $product['image'] : $product['image'])
+                : '';
+        ?>
+        <?php if($imgSrc): ?>
+            <img src="<?= htmlspecialchars($imgSrc) ?>" class="product-detail-img" alt="<?= htmlspecialchars($product['name']) ?>">
         <?php endif; ?>
         <div class="product-detail-info">
             <span class="product-category"><?= htmlspecialchars($product['category']) ?></span>

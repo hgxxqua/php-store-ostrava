@@ -32,6 +32,7 @@ CREATE TABLE `products` (
   `brand` varchar(25) NOT NULL,
   `category` varchar(25) NOT NULL,
   `stock` int(11) NOT NULL,
+  `image` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

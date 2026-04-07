@@ -1,23 +1,39 @@
 <?php
 session_start();
-if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php'); exit;
+if (empty($_SESSION['login-in'])) {
+    header('Location: register.php'); exit;
 }
 
 require_once __DIR__ . '/db.php';
 $conn = polacz_z_baza();
 
-// Берём пользователя из БД
-$id   = (int)$_SESSION['user_id'];
-$res  = mysqli_query($conn, "SELECT * FROM users WHERE id = $id");
+// Если задан user_id — ищем по нему, иначе по username
+if (!empty($_SESSION['user_id'])) {
+    $id  = (int)$_SESSION['user_id'];
+    $res = mysqli_query($conn, "SELECT * FROM users WHERE id = $id LIMIT 1");
+} else {
+    $uname = mysqli_real_escape_string($conn, $_SESSION['username'] ?? '');
+    $res   = mysqli_query($conn, "SELECT * FROM users WHERE name = '$uname' LIMIT 1");
+}
 $user = mysqli_fetch_assoc($res);
 
 if (!$user) {
     session_destroy();
-    header('Location: login.php'); exit;
+    header('Location: register.php'); exit;
 }
 
-// Берём заказы пользователя с товарами
+$id = (int)$user['id'];
+
+// Админы идут в админ-панель
+if ($user['role'] === 'admin') {
+    header('Location: admin.php'); exit;
+}
+
+// Активный таб
+$tab = $_GET['tab'] ?? 'orders';
+if (!in_array($tab, ['orders','info'])) $tab = 'orders';
+
+// Заказы пользователя
 $res_orders = mysqli_query($conn, "
     SELECT
         o.id,
@@ -31,6 +47,7 @@ $res_orders = mysqli_query($conn, "
     GROUP BY o.id
     ORDER BY o.created_at DESC
 ");
+$order_count = $res_orders ? mysqli_num_rows($res_orders) : 0;
 
 // Инициалы для аватара
 $words    = explode(' ', $user['name']);
@@ -39,7 +56,7 @@ $initials = mb_strtoupper(
     (isset($words[1]) ? mb_substr($words[1], 0, 1) : '')
 );
 
-// Форматирование даты на русском
+// Форматирование даты
 function formatDateRu(string $date): string {
     $months = ['','января','февраля','марта','апреля','мая','июня',
                'июля','августа','сентября','октября','ноября','декабря'];
@@ -307,6 +324,36 @@ function formatDateRu(string $date): string {
       .sidebar { position: static; }
       nav { padding: 0 16px; }
     }
+
+    .info-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      gap: 16px;
+    }
+    .info-row:last-child { border-bottom: none; }
+
+    .info-label {
+      font-size: 13px;
+      color: var(--muted);
+      min-width: 160px;
+    }
+
+    .info-value {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text);
+      text-align: right;
+    }
   </style>
 </head>
 <body>
@@ -314,7 +361,7 @@ function formatDateRu(string $date): string {
 <nav>
   <a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
   <div class="nav-links">
-    <a href="catalog.php">Каталог</a>
+    <a href="index.php">Каталог</a>
     <?php if ($user['role'] === 'admin'): ?>
       <a href="admin.php" style="color:#ff2d78;font-weight:600;">⚡ Админ</a>
     <?php endif; ?>
@@ -337,11 +384,11 @@ function formatDateRu(string $date): string {
       <span class="role-badge"><?= htmlspecialchars($user['role']) ?></span>
     </div>
     <nav class="sidebar-menu">
-      <a href="cabinet.php" class="menu-item active">
-        <span class="icon">📦</span> Мои заказы
+      <a href="cabinet.php?tab=orders" class="menu-item <?= $tab === 'orders' ? 'active' : '' ?>">
+        <span class="icon">📦</span> История заказов
       </a>
-      <a href="settings.php" class="menu-item">
-        <span class="icon">⚙️</span> Настройки
+      <a href="cabinet.php?tab=info" class="menu-item <?= $tab === 'info' ? 'active' : '' ?>">
+        <span class="icon">👤</span> Личная информация
       </a>
       <a href="logout.php" class="menu-item">
         <span class="icon">🚪</span> Выйти
@@ -350,9 +397,11 @@ function formatDateRu(string $date): string {
   </aside>
 
   <main class="content">
-    <div class="section-title">Мои заказы</div>
 
-    <?php if (mysqli_num_rows($res_orders) === 0): ?>
+    <?php if ($tab === 'orders'): ?>
+    <div class="section-title">История заказов</div>
+
+    <?php if ($order_count === 0): ?>
       <div class="empty-orders">У вас пока нет заказов</div>
     <?php else: ?>
       <?php while ($order = mysqli_fetch_assoc($res_orders)): ?>
@@ -363,7 +412,7 @@ function formatDateRu(string $date): string {
           </div>
           <div class="order-product"><?= htmlspecialchars($order['products']) ?></div>
           <div class="order-total">
-            Итого: <?= number_format($order['total'], 0, '.', ' ') ?> ₽
+            Итого: <?= number_format($order['total'], 0, '.', ' ') ?> zl
           </div>
           <div class="order-status">
             <span class="status-badge delivered">Доставлен</span>
@@ -371,6 +420,35 @@ function formatDateRu(string $date): string {
         </div>
       <?php endwhile; ?>
     <?php endif; ?>
+
+    <?php elseif ($tab === 'info'): ?>
+    <div class="section-title">Личная информация</div>
+
+    <div class="info-card">
+      <div class="info-row">
+        <span class="info-label">Имя пользователя</span>
+        <span class="info-value"><?= htmlspecialchars($user['name']) ?></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Email</span>
+        <span class="info-value"><?= htmlspecialchars($user['email']) ?></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Роль</span>
+        <span class="info-value"><span class="role-badge"><?= htmlspecialchars($user['role']) ?></span></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Дата регистрации</span>
+        <span class="info-value"><?= formatDateRu($user['created_at']) ?></span>
+      </div>
+      <div class="info-row">
+        <span class="info-label">Заказов всего</span>
+        <span class="info-value"><?= $order_count ?></span>
+      </div>
+    </div>
+
+    <?php endif; ?>
+
   </main>
 </div>
 

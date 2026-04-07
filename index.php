@@ -42,7 +42,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'logout') {
             <a href="#">|</a>
         <?php endif; ?>
         <?php if(!empty($_SESSION['login-in'])): ?>
-            <span style="color:#ccc"><?= htmlspecialchars($_SESSION['username']) ?></span>
+            <a href="cabinet.php" style="color:#ccc"><?= htmlspecialchars($_SESSION['username']) ?></a>
             <a href="#">|</a>
             <a href="logout.php">Logout</a>
         <?php else: ?>
@@ -94,8 +94,13 @@ function buildUrl($key, $value){
     <div class="products">
         <?php $products = getFilteredProducts(); while($p = mysqli_fetch_assoc($products)): ?>
         <a href="product.php?id=<?= $p['id'] ?>" class="product-card">
-            <?php if(!empty($p['image']) && file_exists(__DIR__.'/uploads/'.$p['image'])): ?>
-                <img src="uploads/<?= htmlspecialchars($p['image']) ?>" class="product-card-img" alt="<?= htmlspecialchars($p['name']) ?>">
+            <?php
+                $imgSrc = !empty($p['image'])
+                    ? (strpos($p['image'], '/') === false ? 'uploads/' . $p['image'] : $p['image'])
+                    : '';
+            ?>
+            <?php if($imgSrc): ?>
+                <img src="<?= htmlspecialchars($imgSrc) ?>" class="product-card-img" alt="<?= htmlspecialchars($p['name']) ?>">
             <?php endif; ?>
             <span class="product-category"><?= htmlspecialchars($p['category']) ?></span>
             <h3><?= htmlspecialchars($p['name']) ?></h3>
@@ -149,4 +154,9 @@ function buildUrl($key, $value){
 </div>
 
 </body>
+<script>
+<?php if(!empty($_GET['modal']) && $_GET['modal'] === 'login'): ?>
+document.getElementById('login-modal').classList.add('open');
+<?php endif; ?>
+</script>
 </html>

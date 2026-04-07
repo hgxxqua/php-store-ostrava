@@ -2,14 +2,40 @@
 require_once __DIR__ . '/db.php';
 
 
-// TODO: авторизация пользователя
+// Авторизация пользователя: проверяет логин+пароль, устанавливает сессию
 function login($username, $password){
-    // stub
+    $db = polacz_z_baza();
+    $u  = mysqli_real_escape_string($db, $username);
+    $res  = mysqli_query($db, "SELECT * FROM users WHERE name = '$u' LIMIT 1");
+    $user = mysqli_fetch_assoc($res);
+
+    if(!$user || !password_verify($password, $user['password'])){
+        $_SESSION['error'] = 'Неверный логин или пароль';
+        header('Location: index.php?modal=login');
+        exit;
+    }
+
+    $_SESSION['user_id']  = $user['id'];
+    $_SESSION['username'] = $user['name'];
+    $_SESSION['email']    = $user['email'];
+    $_SESSION['role']     = $user['role'];
+    $_SESSION['login-in'] = 'true';
+
+    if($user['role'] === 'admin'){
+        header('Location: admin.php');
+    } else {
+        header('Location: cabinet.php');
+    }
+    exit;
 }
 
 // TODO: выход пользователя из сессии
 function logout(){
-    // stub
+    session_start();
+    session_unset();
+    session_destroy();
+    header('Location: index.php');
+    exit;
 }
 
 // Регистрирует нового пользователя и создаёт сессию; выводит сообщение если логин занят
@@ -24,16 +50,17 @@ function registration($usernamedb, $passworddb, $emaildb){
     $is_free = checklogin($u, $db);
 
     if($is_free){
-        // ВАЖНО: Добавил created_at и CURDATE(), иначе база отклоняет запрос
-        $sql = "INSERT INTO users (name, email, password, role, created_at) 
-                VALUES ('$u', '$e', '$p', 'user', CURDATE())";
+        $hash = password_hash($passworddb, PASSWORD_BCRYPT);
+        $sql  = "INSERT INTO users (name, email, password, role, created_at) 
+                VALUES ('$u', '$e', '$hash', 'user', CURDATE())";
         
         $res = mysqli_query($db, $sql);
 
         if($res){
+            $_SESSION["user_id"]  = mysqli_insert_id($db);
             $_SESSION["username"] = $usernamedb;
-            $_SESSION["email"] = $emaildb;
-            $_SESSION["role"] = "user";
+            $_SESSION["email"]    = $emaildb;
+            $_SESSION["role"]     = "user";
             $_SESSION["login-in"] = "true";
             header("Location: index.php");
             exit();    
@@ -119,17 +146,7 @@ function addProduct(){
     $size = mysqli_real_escape_string($db, $size);
     $brand = mysqli_real_escape_string($db, $brand);
     $category = mysqli_real_escape_string($db, $category);
-    $image = '';
-    if(!empty($_FILES['image']['name'])){
-        $allowed = ['image/jpeg','image/png'];
-        $mime    = mime_content_type($_FILES['image']['tmp_name']);
-        if(in_array($mime, $allowed)){
-            $ext   = $mime === 'image/png' ? 'png' : 'jpg';
-            $image = uniqid('prod_') . '.' . $ext;
-            move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/uploads/' . $image);
-        }
-    }
-    $image = mysqli_real_escape_string($db, $image);
+    $image = mysqli_real_escape_string($db, $_POST['image'] ?? '');
     mysqli_query($db, "INSERT INTO products (name,description,price,size,brand,category,stock,image)
         VALUES ('$name','$desc',$price,'$size','$brand','$category',$stock,'$image')");
 }
@@ -150,21 +167,10 @@ function updateProduct($id){
     $size = mysqli_real_escape_string($db, $size);
     $brand = mysqli_real_escape_string($db, $brand);
     $category = mysqli_real_escape_string($db, $category);
-    $imageSQL = '';
-    if(!empty($_FILES['image']['name'])){
-        $allowed = ['image/jpeg','image/png'];
-        $mime    = mime_content_type($_FILES['image']['tmp_name']);
-        if(in_array($mime, $allowed)){
-            $ext      = $mime === 'image/png' ? 'png' : 'jpg';
-            $filename = uniqid('prod_') . '.' . $ext;
-            move_uploaded_file($_FILES['image']['tmp_name'], __DIR__ . '/uploads/' . $filename);
-            $filename = mysqli_real_escape_string($db, $filename);
-            $imageSQL = ", image='$filename'";
-        }
-    }
+    $image = mysqli_real_escape_string($db, $_POST['image'] ?? '');
     mysqli_query($db, "UPDATE products SET
         name='$name', description='$desc', price=$price,
-        size='$size', brand='$brand', category='$category', stock=$stock $imageSQL
+        size='$size', brand='$brand', category='$category', stock=$stock, image='$image'
         WHERE id=$id");
 }
 

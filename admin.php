@@ -82,7 +82,7 @@ $allProducts = ($page === 'list') ? getAllProducts() : null;
             <div class="section-title">＋ Add Product</div>
             <div class="add-layout">
 
-                <form class="add-form" method="POST" action="admin.php" enctype="multipart/form-data">
+                <form class="add-form" method="POST" action="admin.php">
                     <input type="hidden" name="action" value="add">
 
                     <div class="field-group">
@@ -120,11 +120,9 @@ $allProducts = ($page === 'list') ? getAllProducts() : null;
                         <input type="number" name="stock" id="prev-stock" placeholder="10" oninput="updatePreview()">
                     </div>
 
-                    <!-- Загрузка фото: только JPG / PNG -->
-                    <div class="image-upload-area" onclick="document.getElementById('img-input').click()">
-                        <input type="file" name="image" id="img-input" accept=".jpg,.jpeg,.png" onchange="previewImage(this,'card-img','img-preview-thumb','upload-label')">
-                        <img class="upload-thumb" id="img-preview-thumb" alt="">
-                        <span class="upload-label" id="upload-label">📷 Click to upload photo (JPG / PNG)</span>
+                    <div class="field-group">
+                        <label>Image path</label>
+                        <input type="text" name="image" id="prev-image" placeholder="shoe.jpg" oninput="updatePreviewImage('card-img','card-img-ph',this.value)">
                     </div>
 
                     <button type="submit" class="btn-submit">Add Product</button>
@@ -156,8 +154,13 @@ $allProducts = ($page === 'list') ? getAllProducts() : null;
             <?php while($p = mysqli_fetch_assoc($allProducts)): ?>
             <div class="product-row">
                 <div class="product-row-img">
-                    <?php if(!empty($p['image']) && file_exists(__DIR__.'/uploads/'.$p['image'])): ?>
-                        <img src="uploads/<?= htmlspecialchars($p['image']) ?>" alt="">
+                    <?php
+                        $imgSrc = !empty($p['image'])
+                            ? (strpos($p['image'], '/') === false ? 'uploads/' . $p['image'] : $p['image'])
+                            : '';
+                    ?>
+                    <?php if($imgSrc): ?>
+                        <img src="<?= htmlspecialchars($imgSrc) ?>" alt="">
                     <?php else: ?>
                         No img
                     <?php endif; ?>
@@ -196,7 +199,7 @@ $allProducts = ($page === 'list') ? getAllProducts() : null;
         </div>
         <div class="add-layout">
 
-            <form class="add-form" method="POST" action="admin.php?page=list" enctype="multipart/form-data">
+            <form class="add-form" method="POST" action="admin.php?page=list">
                 <input type="hidden" name="action" value="update">
                 <input type="hidden" name="product_id" id="edit-id">
 
@@ -235,10 +238,9 @@ $allProducts = ($page === 'list') ? getAllProducts() : null;
                     <input type="number" name="stock" id="edit-stock" oninput="updateEditPreview()">
                 </div>
 
-                <div class="image-upload-area" onclick="document.getElementById('edit-img-input').click()">
-                    <input type="file" name="image" id="edit-img-input" accept=".jpg,.jpeg,.png" onchange="previewImage(this,'edit-card-img','edit-img-thumb','edit-upload-label')">
-                    <img class="upload-thumb" id="edit-img-thumb" alt="">
-                    <span class="upload-label" id="edit-upload-label">📷 Replace photo (JPG / PNG)</span>
+                <div class="field-group">
+                    <label>Image path</label>
+                    <input type="text" name="image" id="edit-image" placeholder="shoe.jpg" oninput="updatePreviewImage('edit-card-img','edit-card-img-ph',this.value)">
                 </div>
 
                 <button type="submit" class="btn-submit">Save Changes</button>
@@ -275,24 +277,20 @@ function updatePreview(){
                                                       + ' | Stock: ' + (document.getElementById('prev-stock').value || '—');
 }
 
-// === Показывает загруженное фото в загрузчике и в предпросмотре карточки ===
-function previewImage(input, cardImgId, thumbId, labelId){
-    const file = input.files[0];
-    if(!file) return;
-    const reader = new FileReader();
-    reader.onload = e => {
-        const thumb   = document.getElementById(thumbId);
-        const cardImg = document.getElementById(cardImgId);
-        thumb.src = e.target.result;
-        thumb.style.display = 'block';
-        cardImg.src = e.target.result;
+// === Обновляет фото предпросмотра по введённому пути ===
+function updatePreviewImage(cardImgId, phId, path){
+    const cardImg = document.getElementById(cardImgId);
+    const ph      = document.getElementById(phId);
+    if(path){
+        const src = path.includes('/') ? path : 'uploads/' + path;
+        cardImg.src = src;
         cardImg.style.display = 'block';
-        // Скрываем плейсхолдеры
-        const ph = cardImg.nextElementSibling;
         if(ph) ph.style.display = 'none';
-        document.getElementById(labelId).style.display = 'none';
-    };
-    reader.readAsDataURL(file);
+    } else {
+        cardImg.src = '';
+        cardImg.style.display = 'none';
+        if(ph) ph.style.display = '';
+    }
 }
 
 // === Открывает модал редактирования и заполняет поля данными товара ===
@@ -306,17 +304,10 @@ function openEdit(p){
     document.getElementById('edit-stock').value = p.stock;
     document.getElementById('edit-cat').value   = p.category;
 
+    document.getElementById('edit-image').value = p.image || '';
+
     // Показываем текущее фото товара если есть
-    const cardImg = document.getElementById('edit-card-img');
-    const ph      = document.getElementById('edit-card-img-ph');
-    if(p.image){
-        cardImg.src = 'uploads/' + p.image;
-        cardImg.style.display = 'block';
-        ph.style.display = 'none';
-    } else {
-        cardImg.style.display = 'none';
-        ph.style.display = '';
-    }
+    updatePreviewImage('edit-card-img','edit-card-img-ph', p.image || '');
 
     updateEditPreview();
     document.getElementById('edit-modal').classList.add('open');
