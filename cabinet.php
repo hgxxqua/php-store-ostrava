@@ -326,7 +326,10 @@ function formatDatePl(string $date): string {
   </div>
   <div class="nav-right">
     <a href="cart.php" class="cart-btn">
-      Koszyk <span class="cart-badge">0</span>
+      Koszyk <span class="cart-badge">
+        <?php
+        ?>
+      </span>
     </a>
     <span class="greeting">Hejka, <?= htmlspecialchars($user['name']) ?></span>
     <a href="logout.php" class="btn-logout">Wyloguj się</a>

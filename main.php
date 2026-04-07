@@ -1,6 +1,11 @@
 ﻿<?php
 session_start();
 require_once __DIR__ . '/functions.php';
+
+// Pobieramy aktualne filtry z adresu URL
+$current_brand = $_GET['brand'] ?? null;
+$current_cat   = $_GET['category'] ?? null;
+$search        = $_GET['q'] ?? null;
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -9,6 +14,25 @@ require_once __DIR__ . '/functions.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShoeShop</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Styl dla aktywnego filtra */
+        .tag-btn.active {
+            background-color: #ccff00;
+            color: #000;
+            border-color: #ccff00;
+            font-weight: bold;
+        }
+        .reset-link {
+            color: #ff4444;
+            text-decoration: none;
+            font-size: 13px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+        .reset-link:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
 
@@ -19,8 +43,7 @@ require_once __DIR__ . '/functions.php';
     <nav class="navbar">
         <ul>
             <li><a href="index.php">Home</a></li>
-            <li><a href="index.php">Products</a></li>
-            
+            <li><a href="main.php">Products</a></li>
         </ul>
     </nav>
     
@@ -32,12 +55,12 @@ require_once __DIR__ . '/functions.php';
            echo '<a href="admin.php">Admin Panel</a>';
            echo '<a href="#">|</a>';
         }                                 
-        if($_SESSION["login-in"] == true){
+        if(isset($_SESSION["login-in"]) && $_SESSION["login-in"] == true){
             echo '<a href="cabinet.php">Cabinet</a>';
             echo '<a href="#">|</a>';
             echo '<a href="logout.php">Logout</a>';
             echo '<a href="#">|</a>';
-        } else if($_SESSION["login-in"] == false){
+        } else {
             echo '<a href="login.php">Login</a>';
             echo '<a href="#">|</a>';
         } 
@@ -46,31 +69,42 @@ require_once __DIR__ . '/functions.php';
 </header>
 
 <div class="filters-wrapper">
-    
     <div class="filters">
         <span class="filter-label">Filter by brand:</span>
-        <a href="?brand=Balenciaga" class="tag-btn">Balenciaga</a>
-        <a href="?brand=Dior"       class="tag-btn">Dior</a>
-        <a href="?brand=Gucci"      class="tag-btn">Gucci</a>
-        <a href="?brand=Prada"      class="tag-btn">Prada</a>
-        <a href="?brand=Versace"    class="tag-btn">Versace</a>
+        
+        <a href="?brand=Balenciaga" class="tag-btn <?= ($current_brand == 'Balenciaga') ? 'active' : '' ?>">Balenciaga</a>
+        <a href="?brand=Dior"       class="tag-btn <?= ($current_brand == 'Dior') ? 'active' : '' ?>">Dior</a>
+        <a href="?brand=Gucci"      class="tag-btn <?= ($current_brand == 'Gucci') ? 'active' : '' ?>">Gucci</a>
+        <a href="?brand=Prada"      class="tag-btn <?= ($current_brand == 'Prada') ? 'active' : '' ?>">Prada</a>
+        <a href="?brand=Versace"    class="tag-btn <?= ($current_brand == 'Versace') ? 'active' : '' ?>">Versace</a>
+
+        <?php if ($current_brand || $current_cat || $search): ?>
+            <a href="main.php" class="reset-link">✕ Wyczyść filtry</a>
+        <?php endif; ?>
     </div>
+    
     <div class="search">
-        <form action="index.php" method="GET">
-            <input type="search" name="q" placeholder="Search...">
+        <form action="main.php" method="GET">
+            <input type="search" name="q" placeholder="Search..." value="<?= htmlspecialchars($search ?? '') ?>">
             <button type="submit">Find</button>
         </form>
     </div>
 </div>
 
 <main class="main-wrapper">
+    <aside class="categories" style="width: 200px;">
+        <h4>Kategorie</h4>
+        <a href="main.php" class="category-btn <?= (!$current_cat) ? 'active' : '' ?>">Wszystkie</a>
+        <a href="?category=Casual" class="category-btn <?= ($current_cat == 'Casual') ? 'active' : '' ?>">Casual</a>
+        <a href="?category=Sport" class="category-btn <?= ($current_cat == 'Sport') ? 'active' : '' ?>">Sport</a>
+        <a href="?category=Formal" class="category-btn <?= ($current_cat == 'Formal') ? 'active' : '' ?>">Formal</a>
+        <a href="?category=Outdoor" class="category-btn <?= ($current_cat == 'Outdoor') ? 'active' : '' ?>">Outdoor</a>
+    </aside>
+
     <div class="products">
         <?php
-        $cat = $_GET['category'] ?? null;
-        $brand = $_GET['brand'] ?? null;
-        $search = $_GET['q'] ?? null;
-        
-        $products_res = getProducts($cat, $brand, $search);
+        // Вызов функции получения продуктов с текущими фильтрами
+        $products_res = getProducts($current_cat, $current_brand, $search);
         
         if (mysqli_num_rows($products_res) > 0):
             while ($p = mysqli_fetch_assoc($products_res)): ?>
@@ -92,7 +126,7 @@ require_once __DIR__ . '/functions.php';
             <p class="no-results">Nie znaleziono produktów.</p>
         <?php endif; ?>
     </div>
-    </main>
+</main>
 
 <footer>
     <p>&copy; 2026 ShoeShop Ostrava</p>
