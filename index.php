@@ -100,7 +100,7 @@ if (!isset($_SESSION["login-in"])) {
 </html>
 </body>
 
-    <div style="color: white; background: #040404; padding: 20px; margin-left: 20px; border: 1px dashed #ccff00;">
+    <div style="color: white; background: #040404; padding: 20px; margin-left: 20px; border: 1px dashed #ccff00; opacity: 100%; animation: none; z-index: 1; " >
         <h3>Debug Session:</h3>
         <?php
             echo '<pre>';
