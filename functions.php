@@ -55,7 +55,8 @@ function getProducts($category = null, $brand = null, $search = null) {
     return mysqli_query($db, $sql);
 }
 
-// Zarządzanie koszykiem (dodawanie)
+// koszyk dodawanie
+// dodawanie 
 function addToCart($productId) {
     if (!isset($_SESSION['cart'])) $_SESSION['cart'] = [];
     

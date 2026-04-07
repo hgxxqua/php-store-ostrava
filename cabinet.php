@@ -320,8 +320,15 @@ function formatDatePl(string $date): string {
   <a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
   <div class="nav-links">
     <a href="catalog.php">Katalog</a>
+
+<!-- 
+Tutaj mamy zmiane kolory roli uzytkownika 
+jezeli user to mamy zielony taki salatowy 
+a jezeli admin to mamy     
+
+-->
     <?php if ($user['role'] === 'admin'): ?>
-      <a href="admin.php" style="color:#ff2d78;font-weight:600;">⚡ Admin</a>
+      <a href="admin.php" style="color:#ff2d78;font-weight:600; background:  ">⚡ Admin</a>
     <?php endif; ?>
   </div>
   <div class="nav-right">
@@ -340,9 +347,23 @@ function formatDatePl(string $date): string {
   <aside class="sidebar">
     <div class="profile-card">
       <div class="avatar"><?= $initials ?></div>
+    <!-- 
+    tutaj przeklenstwa z php prowadzimy to rozumu w html  
+    -->
       <div class="profile-name"><?= htmlspecialchars($user['name']) ?></div>
       <div class="profile-email"><?= htmlspecialchars($user['email']) ?></div>
-      <span class="role-badge"><?= htmlspecialchars($user['role']) ?></span>
+
+
+
+      
+
+      <span 
+      <?php
+      if ($user['role'] === 'admin'):?>
+      style="color:#ff2d78;font-weight:600; background-color: #ba3664;"
+      <?php endif;?>
+      class="role-badge"><?= htmlspecialchars($user['role']) ?></span>
+
     </div>
     <nav class="sidebar-menu">
       <a href="cabinet.php" class="menu-item active">
