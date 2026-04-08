@@ -22,12 +22,12 @@ if (!$user) {
 }
 
 // kwerenda do otrzymania zamowienia
+// Обновленный запрос без колонки status
 $res_orders = mysqli_query($conn, "
     SELECT
         o.id,
         o.total,
         o.created_at,
-        o.status,
         GROUP_CONCAT(p.name SEPARATOR ', ') AS products
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
@@ -399,34 +399,22 @@ a jezeli admin to mamy
   <main class="content">
     <div class="section-title">Wasze zamowienia</div>
 
-    <?php if (mysqli_num_rows($res_orders) === 0): ?>
+    <?php if (mysqli_num_rows($res_orders) === 0):  // uzycie endwhile | endwhile dla czytelnosci //?>
+      
       <div class="empty-orders">Poki co nie masz żadnych zamówień</div>
     <?php else: ?>
-      <?php while ($order = mysqli_fetch_assoc($res_orders)):
-          $statusLabels = [
-              'new'        => 'Nowe',
-              'processing' => 'W realizacji',
-              'shipped'    => 'Wysłane',
-              'delivered'  => 'Dostarczone',
-              'cancelled'  => 'Anulowane',
-          ];
-          $statusKey   = $order['status'] ?? 'new';
-          $statusLabel = $statusLabels[$statusKey] ?? $statusKey;
-      ?>
-        <div class="order-card">
-          <div class="order-header">
-            <span class="order-id">Zamowienie #<?= $order['id'] ?></span>
-            <span class="order-date"><?= formatDatePl($order['created_at']) ?></span>
-          </div>
-          <div class="order-product"><?= htmlspecialchars($order['products']) ?></div>
-          <div class="order-total">
-            Suma: <?= number_format($order['total'], 0, '.', ' ') ?> zl 
-          </div>
-          <div class="order-status">
-            <span class="status-badge <?= htmlspecialchars($statusKey) ?>"><?= htmlspecialchars($statusLabel) ?></span>
-          </div>
-        </div>
-      <?php endwhile; ?>
+      <?php while ($order = mysqli_fetch_assoc($res_orders)): ?>
+    <div class="order-card">
+      <div class="order-header">
+        <span class="order-id">Zamowienie #<?= $order['id'] ?></span>
+        <span class="order-date"><?= formatDatePl($order['created_at']) ?></span>
+      </div>
+      <div class="order-product"><?= htmlspecialchars($order['products']) ?></div>
+      <div class="order-total">
+        Suma: <?= number_format($order['total'], 0, '.', ' ') ?> zl 
+      </div>
+      </div>
+<?php endwhile; ?>
     <?php endif; ?>
   </main>
 </div>
