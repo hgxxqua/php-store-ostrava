@@ -142,8 +142,9 @@ function addProduct(){
 
 // Aktualizacja dannych o zgodnie z id
 function updateProduct($id){
-    $db       = polacz_z_baza();
+    $db       = polacz_z_baza(); //
     $id       = (int)$id;
+    
     $name     = $_POST['name'];
     $desc     = $_POST['desc'];
     $price    = (int)$_POST['price'];
@@ -151,15 +152,18 @@ function updateProduct($id){
     $brand    = $_POST['brand'];
     $category = $_POST['category'];
     $stock    = (int)$_POST['stock'];
-    $name = mysqli_real_escape_string($db, $name);
-    $desc = mysqli_real_escape_string($db, $desc);
-    $size = mysqli_real_escape_string($db, $size);
-    $brand = mysqli_real_escape_string($db, $brand);
+
+    // wypelnienie dannych
+    $name     = mysqli_real_escape_string($db, $name);
+    $desc     = mysqli_real_escape_string($db, $desc);
+    $size     = mysqli_real_escape_string($db, $size);
+    $brand    = mysqli_real_escape_string($db, $brand);
     $category = mysqli_real_escape_string($db, $category);
-    $image = mysqli_real_escape_string($db, $_POST['image'] ?? '');
+    $image    = mysqli_real_escape_string($db, $_POST['image_path'] ?? 'default.png'); //
+
     mysqli_query($db, "UPDATE products SET
         name='$name', description='$desc', price=$price,
-        size='$size', brand='$brand', category='$category', stock=$stock, image='$image'
+        size='$size', brand='$brand', category='$category', stock=$stock, image_path='$image'
         WHERE id=$id");
 }
 
