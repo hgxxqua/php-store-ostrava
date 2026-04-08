@@ -132,9 +132,10 @@ body {
 }
 
 .admin-banner p {
-    color: #444;
+    color: #837e7e;
     font-size: 13px;
     letter-spacing: 2px;
+    font-weight: bold;
 }
 
 .admin-banner .banner-line {
