@@ -40,12 +40,6 @@ $search        = $_GET['q'] ?? null;
     <div class="logo">
         <a href="main.php">ShoeShop</a>
     </div>
-    <nav class="navbar">
-        <ul>
-            <li><a href="main.php">Home</a></li>
-            <li><a href="main.php">Products</a></li>
-        </ul>
-    </nav>
     
     <div class="auth">
         <a href="#">Contact</a>

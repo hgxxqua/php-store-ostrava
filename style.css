@@ -25,19 +25,6 @@ body {
     text-decoration: none;
 }
 
-.navbar ul {
-    list-style: none;
-    display: flex;
-    gap: 16px;
-}
-
-.navbar a {
-    color: #ccc;
-    text-decoration: none;
-}
-
-.navbar a:hover { color: #ccff00; }
-
 .cart a, .auth a {
     
     color: #ccff00;
