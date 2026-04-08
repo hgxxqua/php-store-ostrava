@@ -12,7 +12,7 @@ $search        = $_GET['q'] ?? null;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ShoeShop</title>
+    <title>👟 ShoeShop</title>
     <link rel="stylesheet" href="style.css">
     <style>
         /* Styl dla aktywnego filtra */
@@ -38,12 +38,10 @@ $search        = $_GET['q'] ?? null;
 
 <header class="header">
     <div class="logo">
-        <a href="main.php">ShoeShop</a>
+        <a href="main.php">👟 ShoeShop</a>
     </div>
     
     <div class="auth">
-        <a href="#">Kontakt</a>
-        <a href="#">|</a>
         <?php 
         if(isAdmin()){
            echo '<a href="admin.php">Panel administratora</a>';
@@ -122,7 +120,7 @@ $search        = $_GET['q'] ?? null;
 </main>
 
 <footer>
-    <p>&copy; 2026 ShoeShop Ostrava</p>
+    <p>&copy; 2026 👟 ShoeShop Ostrava</p>
 </footer>
 
 </body>

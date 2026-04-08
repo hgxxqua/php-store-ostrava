@@ -112,6 +112,32 @@ function isAdmin(){
     return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 }
 
+// Pobiera wszystkie zamówienia dla panelu admina
+function getAdminOrders() {
+    $db = polacz_z_baza();
+    return mysqli_query($db, "
+        SELECT o.id, o.total, o.created_at, o.status,
+               u.name AS username, u.email,
+               GROUP_CONCAT(p.name SEPARATOR ', ') AS products
+        FROM orders o
+        JOIN users u       ON u.id = o.user_id
+        JOIN order_items oi ON oi.order_id = o.id
+        JOIN products p    ON p.id = oi.product_id
+        GROUP BY o.id
+        ORDER BY o.created_at DESC
+    ");
+}
+
+// Aktualizuje status zamówienia
+function updateOrderStatus($orderId, $status) {
+    $allowed = ['new', 'processing', 'shipped', 'delivered', 'cancelled'];
+    if (!in_array($status, $allowed)) return false;
+    $db = polacz_z_baza();
+    $id = (int)$orderId;
+    $s  = mysqli_real_escape_string($db, $status);
+    return mysqli_query($db, "UPDATE orders SET status = '$s' WHERE id = $id");
+}
+
 function checklogin($username, $db){
     $res = mysqli_query($db, "SELECT id FROM users WHERE name = '$username' LIMIT 1");
     return mysqli_num_rows($res) == 0;

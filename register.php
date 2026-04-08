@@ -18,7 +18,7 @@
 <head>
     <meta charset="UTF-8">
     
-    <title>Rejestracja — ShoeShop</title>
+    <title>Rejestracja — 👟 ShoeShop</title>
     <style>
 
       body {

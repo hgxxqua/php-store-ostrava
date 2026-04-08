@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Login"])) {
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Logowanie — ShoeShop</title>
+    <title>Logowanie — 👟 ShoeShop</title>
     <style>
         body {
             margin: 0; 

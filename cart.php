@@ -37,7 +37,7 @@ $db = polacz_z_baza();
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Koszyk — ShoeShop</title>
+    <title>Koszyk — 👟 ShoeShop</title>
     <link rel="stylesheet" href="style.css">
     <style>
         .cart-table {
@@ -82,7 +82,7 @@ $db = polacz_z_baza();
 </head>
 <body>
     <header class="header">
-        <div class="logo"><a href="main.php">ShoeShop</a></div>
+        <div class="logo"><a href="main.php">👟 ShoeShop</a></div>
         <div class="auth"><a href="main.php">Powrót do sklepu</a></div>
     </header>
 
