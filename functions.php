@@ -164,7 +164,7 @@ function updateProduct($id){
 
     mysqli_query($db, "UPDATE products SET
         name='$name', description='$desc', price=$price,
-        size='$size', brand='$brand', category='$category', stock=$stock, image_path='$image'
+        size='$size', brand='$brand', category='$category', stock=$stock, image='$image'
         WHERE id=$id");
 }
 
