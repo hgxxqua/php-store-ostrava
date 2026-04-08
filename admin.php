@@ -34,7 +34,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 }
 
 $page        = $_GET['page'] ?? '';
-$allProducts = ($page === 'list') ? getAllProducts() : null;
+$allProducts = ($page === 'list') ? getProducts() : null;
 ?>
 <!DOCTYPE html>
 <html lang="ru">
