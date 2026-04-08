@@ -27,6 +27,7 @@ $res_orders = mysqli_query($conn, "
         o.id,
         o.total,
         o.created_at,
+        o.status,
         GROUP_CONCAT(p.name SEPARATOR ', ') AS products
     FROM orders o
     JOIN order_items oi ON oi.order_id = o.id
@@ -291,10 +292,30 @@ function formatDatePl(string $date): string {
       border-radius: 20px;
       white-space: nowrap;
     }
+    .status-badge.new {
+      background: rgba(74,158,255,0.1);
+      color: #4a9eff;
+      border: 1px solid rgba(74,158,255,0.2);
+    }
+    .status-badge.processing {
+      background: rgba(255,170,0,0.1);
+      color: #ffaa00;
+      border: 1px solid rgba(255,170,0,0.2);
+    }
+    .status-badge.shipped {
+      background: rgba(204,136,255,0.1);
+      color: #cc88ff;
+      border: 1px solid rgba(204,136,255,0.2);
+    }
     .status-badge.delivered {
       background: rgba(200,240,74,0.1);
       color: var(--accent);
       border: 1px solid rgba(200,240,74,0.2);
+    }
+    .status-badge.cancelled {
+      background: rgba(255,68,68,0.1);
+      color: #ff4444;
+      border: 1px solid rgba(255,68,68,0.2);
     }
 
     .empty-orders {
@@ -381,7 +402,17 @@ a jezeli admin to mamy
     <?php if (mysqli_num_rows($res_orders) === 0): ?>
       <div class="empty-orders">Poki co nie masz żadnych zamówień</div>
     <?php else: ?>
-      <?php while ($order = mysqli_fetch_assoc($res_orders)): ?>
+      <?php while ($order = mysqli_fetch_assoc($res_orders)):
+          $statusLabels = [
+              'new'        => 'Nowe',
+              'processing' => 'W realizacji',
+              'shipped'    => 'Wysłane',
+              'delivered'  => 'Dostarczone',
+              'cancelled'  => 'Anulowane',
+          ];
+          $statusKey   = $order['status'] ?? 'new';
+          $statusLabel = $statusLabels[$statusKey] ?? $statusKey;
+      ?>
         <div class="order-card">
           <div class="order-header">
             <span class="order-id">Zamowienie #<?= $order['id'] ?></span>
@@ -392,7 +423,7 @@ a jezeli admin to mamy
             Suma: <?= number_format($order['total'], 0, '.', ' ') ?> zl 
           </div>
           <div class="order-status">
-            <span class="status-badge delivered">Paka dostarczona</span>
+            <span class="status-badge <?= htmlspecialchars($statusKey) ?>"><?= htmlspecialchars($statusLabel) ?></span>
           </div>
         </div>
       <?php endwhile; ?>
