@@ -4,7 +4,7 @@ require_once 'functions.php';
 
 // Не-админов отправляем на главную
 if(!isAdmin()){
-    header("Location: index.php");
+    header("Location: main.php");
     exit;
 }
 

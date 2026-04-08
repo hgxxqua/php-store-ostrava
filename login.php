@@ -127,7 +127,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Login"])) {
 </head>
 <body>
 
-    <a href="index.php"><h2 style="color:white; margin:0;">Back</h2></a>
+    <a href="main.php"><h2 style="color:white; margin:0;">Back</h2></a>
     
     <div class="glowa">
         <div class="login-box">

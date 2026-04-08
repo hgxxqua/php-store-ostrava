@@ -317,7 +317,7 @@ function formatDatePl(string $date): string {
 <body>
 
 <nav>
-  <a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
+  <a href="main.php" class="logo">👟 <span>Shoe</span>Shop</a>
   <div class="nav-links">
     <a href="catalog.php">Katalog</a>
 

@@ -38,11 +38,11 @@ $search        = $_GET['q'] ?? null;
 
 <header class="header">
     <div class="logo">
-        <a href="index.php">ShoeShop</a>
+        <a href="main.php">ShoeShop</a>
     </div>
     <nav class="navbar">
         <ul>
-            <li><a href="index.php">Home</a></li>
+            <li><a href="main.php">Home</a></li>
             <li><a href="main.php">Products</a></li>
         </ul>
     </nav>
