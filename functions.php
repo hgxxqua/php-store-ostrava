@@ -152,6 +152,7 @@ function updateProduct($id){
     $brand    = $_POST['brand'];
     $category = $_POST['category'];
     $stock    = (int)$_POST['stock'];
+    $image = $_POST['image'];
 
     // wypelnienie dannych
     $name     = mysqli_real_escape_string($db, $name);
@@ -159,7 +160,7 @@ function updateProduct($id){
     $size     = mysqli_real_escape_string($db, $size);
     $brand    = mysqli_real_escape_string($db, $brand);
     $category = mysqli_real_escape_string($db, $category);
-    $image    = mysqli_real_escape_string($db, $_POST['image_path'] ?? 'default.png'); //
+    $image    = mysqli_real_escape_string($db, $image); //
 
     mysqli_query($db, "UPDATE products SET
         name='$name', description='$desc', price=$price,
