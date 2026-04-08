@@ -116,4 +116,57 @@ function checklogin($username, $db){
     $res = mysqli_query($db, "SELECT id FROM users WHERE name = '$username' LIMIT 1");
     return mysqli_num_rows($res) == 0;
 }
+
+
+
+// dodanie produktu 
+function addProduct(){
+    $db       = polacz_z_baza();
+    $name     = $_POST['name'];
+    $desc     = $_POST['desc'];
+    $price    = (int)$_POST['price'];
+    $size     = $_POST['size'];
+    $brand    = $_POST['brand'];
+    $category = $_POST['category'];
+    $stock    = (int)$_POST['stock'];
+    if(!$name || $price <= 0) return;
+    $name = mysqli_real_escape_string($db, $name);
+    $desc = mysqli_real_escape_string($db, $desc);
+    $size = mysqli_real_escape_string($db, $size);
+    $brand = mysqli_real_escape_string($db, $brand);
+    $category = mysqli_real_escape_string($db, $category);
+    $image = mysqli_real_escape_string($db, $_POST['image'] ?? '');
+    mysqli_query($db, "INSERT INTO products (name,description,price,size,brand,category,stock,image)
+        VALUES ('$name','$desc',$price,'$size','$brand','$category',$stock,'$image')");
+}
+
+// Aktualizacja dannych o zgodnie z id
+function updateProduct($id){
+    $db       = polacz_z_baza();
+    $id       = (int)$id;
+    $name     = $_POST['name'];
+    $desc     = $_POST['desc'];
+    $price    = (int)$_POST['price'];
+    $size     = $_POST['size'];
+    $brand    = $_POST['brand'];
+    $category = $_POST['category'];
+    $stock    = (int)$_POST['stock'];
+    $name = mysqli_real_escape_string($db, $name);
+    $desc = mysqli_real_escape_string($db, $desc);
+    $size = mysqli_real_escape_string($db, $size);
+    $brand = mysqli_real_escape_string($db, $brand);
+    $category = mysqli_real_escape_string($db, $category);
+    $image = mysqli_real_escape_string($db, $_POST['image'] ?? '');
+    mysqli_query($db, "UPDATE products SET
+        name='$name', description='$desc', price=$price,
+        size='$size', brand='$brand', category='$category', stock=$stock, image='$image'
+        WHERE id=$id");
+}
+
+// usuniecie produktu po id
+function deleteProduct($id){
+    $db = polacz_z_baza();
+    $id = (int)$id;
+    mysqli_query($db, "DELETE FROM products WHERE id = $id");
+}
 ?>
