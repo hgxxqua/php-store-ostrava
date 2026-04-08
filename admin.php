@@ -1,277 +1,336 @@
 <?php
 session_start();
-require_once __DIR__ . '/db.php';
+require_once 'functions.php';
 
-$conn = polacz_z_baza();
-
-/* --- Проверка администратора --- */
-function isAdmin(){
-    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
-}
-
+// Не-админов отправляем на главную
 if(!isAdmin()){
     header("Location: index.php");
     exit;
 }
 
-/* --- Добавление товара --- */
-function addProduct($conn){
-
-    $name = trim($_POST['name'] ?? '');
-    $desc = trim($_POST['desc'] ?? '');
-    $price = (int)($_POST['price'] ?? 0);
-    $size = trim($_POST['size'] ?? '');
-    $brand = trim($_POST['brand'] ?? '');
-    $category = trim($_POST['category'] ?? '');
-    $stock = (int)($_POST['stock'] ?? 0);
-
-    if(!$name || $price <= 0){
-        return;
-    }
-
-    $stmt = $conn->prepare("
-        INSERT INTO products (name,description,price,size,brand,category,stock)
-        VALUES (?,?,?,?,?,?,?)
-    ");
-
-    $stmt->bind_param("ssisssi",$name,$desc,$price,$size,$brand,$category,$stock);
-    $stmt->execute();
+// Создаём папку uploads если не существует
+if(!is_dir(__DIR__ . '/uploads')){
+    mkdir(__DIR__ . '/uploads', 0755, true);
 }
 
-/* --- Удаление товара --- */
-function deleteProduct($conn){
-
-    $id = (int)($_POST['product_id'] ?? 0);
-
-    if($id <= 0) return;
-
-    $stmt = $conn->prepare("DELETE FROM products WHERE id=?");
-    $stmt->bind_param("i",$id);
-    $stmt->execute();
-}
-
-/* --- POST обработка --- */
+// Обработка POST действий
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-
-    if(($_POST['action'] ?? '') === 'add'){
-        addProduct($conn);
-        header("Location: admin.php");
+    $action = $_POST['action'] ?? '';
+    if($action === 'add'){
+        addProduct();
+        header("Location: admin.php?page=list");
         exit;
     }
-
-    if(($_POST['action'] ?? '') === 'delete'){
-        deleteProduct($conn);
-        header("Location: admin.php");
+    if($action === 'delete'){
+        deleteProduct($_POST['product_id'] ?? 0);
+        header("Location: admin.php?page=list");
+        exit;
+    }
+    if($action === 'update'){
+        updateProduct($_POST['product_id'] ?? 0);
+        header("Location: admin.php?page=list");
         exit;
     }
 }
 
-/* --- Получение товаров --- */
-$res_products = mysqli_query($conn,"SELECT * FROM products ORDER BY id DESC");
+$page        = $_GET['page'] ?? '';
+$allProducts = ($page === 'list') ? getAllProducts() : null;
 ?>
-
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Panel — ShoeShop</title>
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500;600&display=swap" rel="stylesheet">
-
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
-:root{
---bg:#0f0f11;
---surface:#18181c;
---surface2:#222228;
---border:rgba(255,255,255,0.07);
---text:#e8e8ea;
---muted:#7a7a85;
---pink:#ff2d78;
---pink-dim:rgba(255,45,120,0.12);
---accent:#c8f04a;
---radius:14px;
-}
-
-body{
-font-family:'Onest',sans-serif;
-background:var(--bg);
-color:var(--text);
-min-height:100vh;
-}
-
-nav{
-display:flex;
-align-items:center;
-padding:0 28px;
-height:58px;
-border-bottom:1px solid var(--border);
-background:rgba(15,15,17,0.95);
-backdrop-filter:blur(10px);
-gap:24px;
-}
-
-.logo{
-font-family:'Unbounded',sans-serif;
-font-size:16px;
-font-weight:700;
-color:var(--accent);
-text-decoration:none;
-display:flex;
-align-items:center;
-gap:7px;
-}
-
-.logo span{color:var(--text);font-weight:400}
-
-.page{
-max-width:1060px;
-margin:28px auto;
-padding:0 24px;
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:20px;
-}
-
-.card{
-background:var(--surface);
-border:1px solid var(--border);
-border-radius:var(--radius);
-padding:24px;
-}
-
-.card-title{
-font-size:15px;
-font-weight:600;
-margin-bottom:20px;
-color:var(--pink);
-}
-
-input,select,textarea{
-background:var(--surface2);
-border:1px solid var(--border);
-color:var(--text);
-font-family:'Onest';
-font-size:14px;
-padding:10px 13px;
-border-radius:9px;
-width:100%;
-margin-bottom:12px;
-}
-
-.btn-add{
-width:100%;
-padding:13px;
-background:var(--pink);
-color:#fff;
-font-family:'Unbounded';
-font-size:13px;
-font-weight:600;
-border:none;
-border-radius:10px;
-cursor:pointer;
-}
-
-.product-row{
-display:flex;
-align-items:center;
-gap:10px;
-padding:13px 0;
-border-bottom:1px solid var(--border);
-}
-
-.product-name{flex:1}
-
-.product-price{
-font-weight:600;
-color:var(--accent);
-}
-
-.btn-delete{
-background:transparent;
-border:1px solid rgba(255,45,120,0.35);
-color:var(--pink);
-padding:5px 12px;
-border-radius:7px;
-cursor:pointer;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel — ShoeShop</title>
+    <link rel="stylesheet" href="admin.css">
 </head>
-
 <body>
 
-<nav>
-<a href="index.php" class="logo">👟 <span>Shoe</span>Shop</a>
-</nav>
+<div class="admin-wrapper">
 
-<div class="page">
+    <!-- ========== SIDEBAR ========== -->
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar-logo">
+            <span>ShoeShop</span>
+            <small>Admin · <?= htmlspecialchars($_SESSION['username']) ?></small>
+        </div>
+        <nav class="admin-nav">
+            <a href="admin.php?page=add"  class="<?= $page === 'add'  ? 'active' : '' ?>">＋ Add Product</a>
+            <a href="admin.php?page=list" class="<?= $page === 'list' ? 'active' : '' ?>">☰ Products List</a>
+            <hr class="nav-divider">
+            <a href="main.php">← Back to Shop</a>
+            <a href="logout.php" class="nav-danger">⏻ Logout</a>
+        </nav>
+    </aside>
 
-<div class="card">
+    <!-- ========== MAIN ========== -->
+    <main class="admin-main <?= $page ? 'has-content' : '' ?>">
 
-<div class="card-title">+ Добавить товар</div>
+        <!-- Welcome banner (затемняется когда выбран раздел) -->
+        <div class="admin-banner">
+            <div class="banner-line"></div>
+            <h1>SHOESHOP</h1>
+            <p>Select a section from the left menu</p>
+            <div class="banner-line"></div>
+        </div>
 
-<form method="POST">
+        <!-- Рабочая область -->
+        <div class="admin-content-area">
 
-<input type="hidden" name="action" value="add">
+            <?php if($page === 'add'): ?>
+            <!-- ===== ДОБАВЛЕНИЕ ТОВАРА ===== -->
+            <div class="section-title">＋ Add Product</div>
+            <div class="add-layout">
 
-<input type="text" name="name" placeholder="Название" required>
+                <form class="add-form" method="POST" action="admin.php">
+                    <input type="hidden" name="action" value="add">
 
-<textarea name="desc" placeholder="Описание"></textarea>
+                    <div class="field-group">
+                        <label>Name</label>
+                        <input type="text" name="name" id="prev-name" placeholder="Triple S" required oninput="updatePreview()">
+                    </div>
+                    <div class="field-group">
+                        <label>Description</label>
+                        <textarea name="desc" placeholder="Short description..."></textarea>
+                    </div>
+                    <div class="field-group">
+                        <label>Price (zl)</label>
+                        <input type="number" name="price" id="prev-price" placeholder="990" required oninput="updatePreview()">
+                    </div>
+                    <div class="field-group">
+                        <label>Size</label>
+                        <input type="text" name="size" id="prev-size" placeholder="42" oninput="updatePreview()">
+                    </div>
+                    <div class="field-group">
+                        <label>Brand</label>
+                        <input type="text" name="brand" placeholder="Balenciaga">
+                    </div>
+                    <div class="field-group">
+                        <label>Category</label>
+                        <select name="category" id="prev-cat" onchange="updatePreview()">
+                            <option value="Casual">Casual</option>
+                            <option value="Sport">Sport</option>
+                            <option value="Formal">Formal</option>
+                            <option value="Outdoor">Outdoor</option>
+                            <option value="Party">Party</option>
+                        </select>
+                    </div>
+                    <div class="field-group">
+                        <label>Stock</label>
+                        <input type="number" name="stock" id="prev-stock" placeholder="10" oninput="updatePreview()">
+                    </div>
 
-<input type="number" name="price" placeholder="Цена" required>
+                    <div class="field-group">
+                        <label>Image path</label>
+                        <input type="text" name="image" id="prev-image" placeholder="shoe.jpg" oninput="updatePreviewImage('card-img','card-img-ph',this.value)">
+                    </div>
 
-<input type="text" name="size" placeholder="Размер">
+                    <button type="submit" class="btn-submit">Add Product</button>
+                </form>
 
-<input type="text" name="brand" placeholder="Бренд">
+                <!-- Предпросмотр карточки товара -->
+                <div class="preview-wrap">
+                    <div class="preview-label">Preview</div>
+                    <div class="preview-card">
+                        <div class="preview-img">
+                            <img id="card-img" alt="">
+                            <span id="card-img-ph">No photo</span>
+                        </div>
+                        <div class="preview-body">
+                            <div class="preview-cat"  id="card-cat">Casual</div>
+                            <div class="preview-name" id="card-name">Product name</div>
+                            <div class="preview-price" id="card-price">— zl</div>
+                            <div class="preview-meta"  id="card-meta">Size: — | Stock: —</div>
+                        </div>
+                    </div>
+                </div>
 
-<select name="category">
-<option value="Casual">Casual</option>
-<option value="Sport">Sport</option>
-<option value="Formal">Formal</option>
-<option value="Outdoor">Outdoor</option>
-</select>
+            </div>
 
-<input type="number" name="stock" placeholder="Остаток">
+            <?php elseif($page === 'list'): ?>
+            <!-- ===== СПИСОК ТОВАРОВ ===== -->
+            <div class="section-title">☰ Products List</div>
 
-<button class="btn-add">Добавить товар</button>
+            <?php while($p = mysqli_fetch_assoc($allProducts)): ?>
+            <div class="product-row">
+                <div class="product-row-img">
+                    <?php
+                        $imgSrc = !empty($p['image'])
+                            ? (strpos($p['image'], '/') === false ? 'uploads/' . $p['image'] : $p['image'])
+                            : '';
+                    ?>
+                    <?php if($imgSrc): ?>
+                        <img src="<?= htmlspecialchars($imgSrc) ?>" alt="">
+                    <?php else: ?>
+                        No img
+                    <?php endif; ?>
+                </div>
+                <div class="product-row-info">
+                    <div class="product-row-name"><?= htmlspecialchars($p['name']) ?></div>
+                    <div class="product-row-meta"><?= htmlspecialchars($p['category']) ?> · Size <?= htmlspecialchars($p['size']) ?> · Stock <?= $p['stock'] ?></div>
+                </div>
+                <div class="product-row-price"><?= $p['price'] ?> zl</div>
 
-</form>
+                <!-- Кнопка редактирования — открывает модал с заполненными полями -->
+                <button class="btn-edit" onclick="openEdit(<?= htmlspecialchars(json_encode($p), ENT_QUOTES) ?>)">Edit</button>
 
+                <!-- Кнопка удаления — требует подтверждения -->
+                <form method="POST" onsubmit="return confirm('Delete «<?= htmlspecialchars($p['name']) ?>»? This cannot be undone.')">
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
+                    <button type="submit" class="btn-delete">Delete</button>
+                </form>
+            </div>
+            <?php endwhile; ?>
+
+            <?php endif; ?>
+
+        </div><!-- /admin-content-area -->
+
+    </main>
 </div>
 
-<div class="card">
+<!-- ========== EDIT MODAL ========== -->
+<div class="modal-overlay" id="edit-modal">
+    <div class="modal-box">
+        <div class="modal-title">
+            Edit Product
+            <button class="modal-close" onclick="closeEdit()">✕</button>
+        </div>
+        <div class="add-layout">
 
-<div class="card-title">Все товары</div>
+            <form class="add-form" method="POST" action="admin.php?page=list">
+                <input type="hidden" name="action" value="update">
+                <input type="hidden" name="product_id" id="edit-id">
 
-<?php while($p = mysqli_fetch_assoc($res_products)): ?>
+                <div class="field-group">
+                    <label>Name</label>
+                    <input type="text" name="name" id="edit-name" required oninput="updateEditPreview()">
+                </div>
+                <div class="field-group">
+                    <label>Description</label>
+                    <textarea name="desc" id="edit-desc"></textarea>
+                </div>
+                <div class="field-group">
+                    <label>Price (zl)</label>
+                    <input type="number" name="price" id="edit-price" required oninput="updateEditPreview()">
+                </div>
+                <div class="field-group">
+                    <label>Size</label>
+                    <input type="text" name="size" id="edit-size" oninput="updateEditPreview()">
+                </div>
+                <div class="field-group">
+                    <label>Brand</label>
+                    <input type="text" name="brand" id="edit-brand">
+                </div>
+                <div class="field-group">
+                    <label>Category</label>
+                    <select name="category" id="edit-cat" onchange="updateEditPreview()">
+                        <option value="Casual">Casual</option>
+                        <option value="Sport">Sport</option>
+                        <option value="Formal">Formal</option>
+                        <option value="Outdoor">Outdoor</option>
+                        <option value="Party">Party</option>
+                    </select>
+                </div>
+                <div class="field-group">
+                    <label>Stock</label>
+                    <input type="number" name="stock" id="edit-stock" oninput="updateEditPreview()">
+                </div>
 
-<div class="product-row">
+                <div class="field-group">
+                    <label>Image path</label>
+                    <input type="text" name="image" id="edit-image" placeholder="shoe.jpg" oninput="updatePreviewImage('edit-card-img','edit-card-img-ph',this.value)">
+                </div>
 
-<span class="product-name"><?=htmlspecialchars($p['name'])?></span>
+                <button type="submit" class="btn-submit">Save Changes</button>
+            </form>
 
-<span class="product-price"><?=$p['price']?> </span>
+            <!-- Предпросмотр редактируемого товара -->
+            <div class="preview-wrap">
+                <div class="preview-label">Preview</div>
+                <div class="preview-card">
+                    <div class="preview-img">
+                        <img id="edit-card-img" alt="">
+                        <span id="edit-card-img-ph">No photo</span>
+                    </div>
+                    <div class="preview-body">
+                        <div class="preview-cat"   id="edit-card-cat">Casual</div>
+                        <div class="preview-name"  id="edit-card-name">Product name</div>
+                        <div class="preview-price" id="edit-card-price">— zl</div>
+                        <div class="preview-meta"  id="edit-card-meta">Size: — | Stock: —</div>
+                    </div>
+                </div>
+            </div>
 
-<form method="POST">
-
-<input type="hidden" name="action" value="delete">
-<input type="hidden" name="product_id" value="<?=$p['id']?>">
-
-<button class="btn-delete">удалить</button>
-
-</form>
-
+        </div>
+    </div>
 </div>
 
-<?php endwhile; ?>
+<script>
+// === Обновляет предпросмотр карточки в форме добавления ===
+function updatePreview(){
+    document.getElementById('card-name').textContent  = document.getElementById('prev-name').value  || 'Product name';
+    document.getElementById('card-price').textContent = (document.getElementById('prev-price').value || '—') + ' zl';
+    document.getElementById('card-cat').textContent   = document.getElementById('prev-cat').value;
+    document.getElementById('card-meta').textContent  = 'Size: ' + (document.getElementById('prev-size').value  || '—')
+                                                      + ' | Stock: ' + (document.getElementById('prev-stock').value || '—');
+}
 
-</div>
+// === Обновляет фото предпросмотра по введённому пути ===
+function updatePreviewImage(cardImgId, phId, path){
+    const cardImg = document.getElementById(cardImgId);
+    const ph      = document.getElementById(phId);
+    if(path){
+        const src = path.includes('/') ? path : 'uploads/' + path;
+        cardImg.src = src;
+        cardImg.style.display = 'block';
+        if(ph) ph.style.display = 'none';
+    } else {
+        cardImg.src = '';
+        cardImg.style.display = 'none';
+        if(ph) ph.style.display = '';
+    }
+}
 
-</div>
+// === Открывает модал редактирования и заполняет поля данными товара ===
+function openEdit(p){
+    document.getElementById('edit-id').value    = p.id;
+    document.getElementById('edit-name').value  = p.name;
+    document.getElementById('edit-desc').value  = p.description;
+    document.getElementById('edit-price').value = p.price;
+    document.getElementById('edit-size').value  = p.size;
+    document.getElementById('edit-brand').value = p.brand;
+    document.getElementById('edit-stock').value = p.stock;
+    document.getElementById('edit-cat').value   = p.category;
+
+    document.getElementById('edit-image').value = p.image || '';
+
+    // Показываем текущее фото товара если есть
+    updatePreviewImage('edit-card-img','edit-card-img-ph', p.image || '');
+
+    updateEditPreview();
+    document.getElementById('edit-modal').classList.add('open');
+}
+
+function closeEdit(){
+    document.getElementById('edit-modal').classList.remove('open');
+}
+
+// === Обновляет предпросмотр карточки в модале редактирования ===
+function updateEditPreview(){
+    document.getElementById('edit-card-name').textContent  = document.getElementById('edit-name').value  || 'Product name';
+    document.getElementById('edit-card-price').textContent = (document.getElementById('edit-price').value || '—') + ' zl';
+    document.getElementById('edit-card-cat').textContent   = document.getElementById('edit-cat').value;
+    document.getElementById('edit-card-meta').textContent  = 'Size: ' + (document.getElementById('edit-size').value  || '—')
+                                                           + ' | Stock: ' + (document.getElementById('edit-stock').value || '—');
+}
+
+// Закрытие модала кликом на фон
+document.getElementById('edit-modal').addEventListener('click', function(e){
+    if(e.target === this) closeEdit();
+});
+</script>
 
 </body>
 </html>
-
-<?php mysqli_close($conn); ?>
