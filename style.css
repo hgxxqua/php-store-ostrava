@@ -30,6 +30,11 @@ body {
     color: #ccff00;
     text-decoration: none;
     font-weight: bold;
+    transition: color 0.2s, letter-spacing 0.2s;
+}
+.cart a:hover, .auth a:hover {
+    color: #fff;
+    letter-spacing: 0.5px;
 }
 .auth,
 
@@ -58,6 +63,11 @@ input:focus {
     border-radius: 4px;
     cursor: pointer;
     font-weight: bold;
+    transition: background 0.2s, transform 0.15s;
+}
+.search button:hover {
+    background: #aadd00;
+    transform: translateY(-1px);
 }
 
 .main-wrapper {
@@ -80,6 +90,13 @@ input:focus {
     border: 1px solid #333;
     border-radius: 8px;
     padding: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card form {
+    margin-top: auto;
+    padding-top: 12px;
 }
 
 .product-card h3 {
@@ -141,9 +158,10 @@ aside.categories h4 {
     font-size: 13px;
     background: #222;
     border: 1px solid #333;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s;
 }
 
-.category-btn:hover { color: #ccff00; border-color: #ccff00; }
+.category-btn:hover { color: #ccff00; border-color: #ccff00; transform: translateX(3px); }
 .category-btn.active { background: #ccff00; color: #000; border-color: #ccff00; font-weight: bold; text-align: center; }
 
 /* FILTERS BAR */
@@ -172,47 +190,32 @@ aside.categories h4 {
     font-size: 12px;
     background: #222;
     border: 1px solid #444;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.15s;
 }
 
-.tag-btn:hover { color: #ccff00; border-color: #ccff00; }
+.tag-btn:hover { color: #ccff00; border-color: #ccff00; transform: translateY(-2px); }
 .tag-btn.active { background: #ccff00; color: #000; border-color: #ccff00; font-weight: bold; }
 
-/* PRODUCT CARD TAGS 
-.product-category {
-    font-size: 10px;
-    color: #666;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    display: block;
-    margin-bottom: 6px;
-}
-
-.product-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    margin-bottom: 10px;
-}
-
+/* PRODUCT CARD TAGS */
 .product-card .btn-view {
-    display: inline-block;
-    padding: 6px 12px;
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
     background: #ccff00;
     color: #000;
-    text-decoration: none;
+    border: none;
     border-radius: 4px;
     font-weight: bold;
     font-size: 13px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.2s ease, transform 0.15s;
 }
 
-.product-card .btn-view:hover { background: #aadd00; }
-
-.no-results {
-    color: #555;
-    font-size: 14px;
-    padding: 20px 0;
+.product-card .btn-view:hover {
+    background: #aadd00;
+    transform: translateY(-2px);
 }
-*/
 footer {
     text-align: center;
     padding: 16px;

@@ -42,20 +42,19 @@ $search        = $_GET['q'] ?? null;
     </div>
     
     <div class="auth">
-        <a href="#">Contact</a>
+        <a href="#">Kontakt</a>
         <a href="#">|</a>
         <?php 
         if(isAdmin()){
-           echo '<a href="admin.php">Admin Panel</a>';
+           echo '<a href="admin.php">Panel administratora</a>';
            echo '<a href="#">|</a>';
         }                                 
         if(isset($_SESSION["login-in"]) && $_SESSION["login-in"] == true){
-            echo '<a href="cabinet.php">Cabinet</a>';
+            echo '<a href="cabinet.php">Moje konto</a>';
             echo '<a href="#">|</a>';
-            echo '<a href="logout.php">Logout</a>';
-            echo '<a href="#">|</a>';
+            echo '<a href="logout.php">Wyloguj się</a>';
         } else {
-            echo '<a href="login.php">Login</a>';
+            echo '<a href="login.php">Zaloguj się</a>';
             echo '<a href="#">|</a>';
         } 
         ?>
@@ -64,7 +63,7 @@ $search        = $_GET['q'] ?? null;
 
 <div class="filters-wrapper">
     <div class="filters">
-        <span class="filter-label">Filter by brand:</span>
+        <span class="filter-label">Filtruj według marki:</span>
         
         <a href="?brand=Balenciaga" class="tag-btn <?= ($current_brand == 'Balenciaga') ? 'active' : '' ?>">Balenciaga</a>
         <a href="?brand=Dior"       class="tag-btn <?= ($current_brand == 'Dior') ? 'active' : '' ?>">Dior</a>
@@ -79,8 +78,8 @@ $search        = $_GET['q'] ?? null;
     
     <div class="search">
         <form action="main.php" method="GET">
-            <input type="search" name="q" placeholder="Search..." value="<?= htmlspecialchars($search ?? '') ?>">
-            <button type="submit">Find</button>
+            <input type="search" name="q" placeholder="Szukaj..." value="<?= htmlspecialchars($search ?? '') ?>">
+            <button type="submit">Szukaj</button>
         </form>
     </div>
 </div>
@@ -112,7 +111,7 @@ $search        = $_GET['q'] ?? null;
                     <form method="POST" action="cart.php">
                         <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
                         <input type="hidden" name="action" value="add">
-                        <button type="submit" class="btn-view" style="border:none; cursor:pointer; width:100%;">Dodaj do koszyka</button>
+                        <button type="submit" class="btn-view">Dodaj do koszyka</button>
                     </form>
                 </div>
             <?php endwhile;

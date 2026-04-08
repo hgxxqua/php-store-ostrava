@@ -37,7 +37,7 @@ $page        = $_GET['page'] ?? '';
 $allProducts = ($page === 'list') ? getProducts() : null;
 ?>
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,11 +55,11 @@ $allProducts = ($page === 'list') ? getProducts() : null;
             <small>Admin · <?= htmlspecialchars($_SESSION['username']) ?></small>
         </div>
         <nav class="admin-nav">
-            <a href="admin.php?page=add"  class="<?= $page === 'add'  ? 'active' : '' ?>">＋ Add Product</a>
-            <a href="admin.php?page=list" class="<?= $page === 'list' ? 'active' : '' ?>">☰ Products List</a>
+            <a href="admin.php?page=add"  class="<?= $page === 'add'  ? 'active' : '' ?>">＋ Dodaj produkt</a>
+            <a href="admin.php?page=list" class="<?= $page === 'list' ? 'active' : '' ?>">☰ Lista produktów</a>
             <hr class="nav-divider">
-            <a href="main.php">← Back to Shop</a>
-            <a href="logout.php" class="nav-danger">⏻ Logout</a>
+            <a href="main.php">← Wróć do sklepu</a>
+            <a href="logout.php" class="nav-danger">⏻ Wyloguj się</a>
         </nav>
     </aside>
 
@@ -70,7 +70,7 @@ $allProducts = ($page === 'list') ? getProducts() : null;
         <div class="admin-banner">
             <div class="banner-line"></div>
             <h1>SHOESHOP</h1>
-            <p>Select a section from the left menu</p>
+            <p>Wybierz sekcję z lewego menu</p>
             <div class="banner-line"></div>
         </div>
 
@@ -79,34 +79,34 @@ $allProducts = ($page === 'list') ? getProducts() : null;
 
             <?php if($page === 'add'): ?>
             <!-- ===== ДОБАВЛЕНИЕ ТОВАРА ===== -->
-            <div class="section-title">＋ Add Product</div>
+            <div class="section-title">＋ Dodaj produkt</div>
             <div class="add-layout">
 
                 <form class="add-form" method="POST" action="admin.php">
                     <input type="hidden" name="action" value="add">
 
                     <div class="field-group">
-                        <label>Name</label>
+                        <label>Nazwa</label>
                         <input type="text" name="name" id="prev-name" placeholder="Triple S" required oninput="updatePreview()">
                     </div>
                     <div class="field-group">
-                        <label>Description</label>
-                        <textarea name="desc" placeholder="Short description..."></textarea>
+                        <label>Opis</label>
+                        <textarea name="desc" placeholder="Krótki opis..."></textarea>
                     </div>
                     <div class="field-group">
-                        <label>Price (zl)</label>
+                        <label>Cena (zł)</label>
                         <input type="number" name="price" id="prev-price" placeholder="990" required oninput="updatePreview()">
                     </div>
                     <div class="field-group">
-                        <label>Size</label>
+                        <label>Rozmiar</label>
                         <input type="text" name="size" id="prev-size" placeholder="42" oninput="updatePreview()">
                     </div>
                     <div class="field-group">
-                        <label>Brand</label>
+                        <label>Marka</label>
                         <input type="text" name="brand" placeholder="Balenciaga">
                     </div>
                     <div class="field-group">
-                        <label>Category</label>
+                        <label>Kategoria</label>
                         <select name="category" id="prev-cat" onchange="updatePreview()">
                             <option value="Casual">Casual</option>
                             <option value="Sport">Sport</option>
@@ -116,29 +116,29 @@ $allProducts = ($page === 'list') ? getProducts() : null;
                         </select>
                     </div>
                     <div class="field-group">
-                        <label>Stock</label>
+                        <label>Stan</label>
                         <input type="number" name="stock" id="prev-stock" placeholder="10" oninput="updatePreview()">
                     </div>
 
                     <div class="field-group">
-                        <label>Image path</label>
+                        <label>Ścieżka do zdjęcia</label>
                         <input type="text" name="image" id="prev-image" placeholder="shoe.jpg" oninput="updatePreviewImage('card-img','card-img-ph',this.value)">
                     </div>
 
-                    <button type="submit" class="btn-submit">Add Product</button>
+                    <button type="submit" class="btn-submit">Dodaj produkt</button>
                 </form>
 
-                <!-- Предпросмотр карточки товара -->
+                <!-- Przedpodgląd karty produktu -->
                 <div class="preview-wrap">
-                    <div class="preview-label">Preview</div>
+                    <div class="preview-label">Podgląd</div>
                     <div class="preview-card">
                         <div class="preview-img">
                             <img id="card-img" alt="">
-                            <span id="card-img-ph">No photo</span>
+                            <span id="card-img-ph">Brak zdjęcia</span>
                         </div>
                         <div class="preview-body">
                             <div class="preview-cat"  id="card-cat">Casual</div>
-                            <div class="preview-name" id="card-name">Product name</div>
+                            <div class="preview-name" id="card-name">Nazwa produktu</div>
                             <div class="preview-price" id="card-price">— zl</div>
                             <div class="preview-meta"  id="card-meta">Size: — | Stock: —</div>
                         </div>
@@ -149,7 +149,7 @@ $allProducts = ($page === 'list') ? getProducts() : null;
 
             <?php elseif($page === 'list'): ?>
             <!-- ===== СПИСОК ТОВАРОВ ===== -->
-            <div class="section-title">☰ Products List</div>
+            <div class="section-title">☰ Lista produktów</div>
 
             <?php while($p = mysqli_fetch_assoc($allProducts)): ?>
             <div class="product-row">
@@ -162,23 +162,23 @@ $allProducts = ($page === 'list') ? getProducts() : null;
                     <?php if($imgSrc): ?>
                         <img src="<?= htmlspecialchars($imgSrc) ?>" alt="">
                     <?php else: ?>
-                        No img
+                        Brak zdjęcia
                     <?php endif; ?>
                 </div>
                 <div class="product-row-info">
                     <div class="product-row-name"><?= htmlspecialchars($p['name']) ?></div>
-                    <div class="product-row-meta"><?= htmlspecialchars($p['category']) ?> · Size <?= htmlspecialchars($p['size']) ?> · Stock <?= $p['stock'] ?></div>
+                    <div class="product-row-meta"><?= htmlspecialchars($p['category']) ?> · Rozmiar <?= htmlspecialchars($p['size']) ?> · Stan: <?= $p['stock'] ?></div>
                 </div>
                 <div class="product-row-price"><?= $p['price'] ?> zl</div>
 
                 <!-- Кнопка редактирования — открывает модал с заполненными полями -->
-                <button class="btn-edit" onclick="openEdit(<?= htmlspecialchars(json_encode($p), ENT_QUOTES) ?>)">Edit</button>
+                <button class="btn-edit" onclick="openEdit(<?= htmlspecialchars(json_encode($p), ENT_QUOTES) ?>)">Edytuj</button>
 
                 <!-- Кнопка удаления — требует подтверждения -->
-                <form method="POST" onsubmit="return confirm('Delete «<?= htmlspecialchars($p['name']) ?>»? This cannot be undone.')">
+                <form method="POST" onsubmit="return confirm('Usunąć «<?= htmlspecialchars($p['name']) ?>»? Tej operacji nie można cofnąć.')">
                     <input type="hidden" name="action" value="delete">
                     <input type="hidden" name="product_id" value="<?= $p['id'] ?>">
-                    <button type="submit" class="btn-delete">Delete</button>
+                    <button type="submit" class="btn-delete">Usuń</button>
                 </form>
             </div>
             <?php endwhile; ?>
@@ -194,7 +194,7 @@ $allProducts = ($page === 'list') ? getProducts() : null;
 <div class="modal-overlay" id="edit-modal">
     <div class="modal-box">
         <div class="modal-title">
-            Edit Product
+            Edytuj produkt
             <button class="modal-close" onclick="closeEdit()">✕</button>
         </div>
         <div class="add-layout">
@@ -204,27 +204,27 @@ $allProducts = ($page === 'list') ? getProducts() : null;
                 <input type="hidden" name="product_id" id="edit-id">
 
                 <div class="field-group">
-                    <label>Name</label>
+                    <label>Nazwa</label>
                     <input type="text" name="name" id="edit-name" required oninput="updateEditPreview()">
                 </div>
                 <div class="field-group">
-                    <label>Description</label>
+                    <label>Opis</label>
                     <textarea name="desc" id="edit-desc"></textarea>
                 </div>
                 <div class="field-group">
-                    <label>Price (zl)</label>
+                    <label>Cena (zł)</label>
                     <input type="number" name="price" id="edit-price" required oninput="updateEditPreview()">
                 </div>
                 <div class="field-group">
-                    <label>Size</label>
+                    <label>Rozmiar</label>
                     <input type="text" name="size" id="edit-size" oninput="updateEditPreview()">
                 </div>
                 <div class="field-group">
-                    <label>Brand</label>
+                    <label>Marka</label>
                     <input type="text" name="brand" id="edit-brand">
                 </div>
                 <div class="field-group">
-                    <label>Category</label>
+                    <label>Kategoria</label>
                     <select name="category" id="edit-cat" onchange="updateEditPreview()">
                         <option value="Casual">Casual</option>
                         <option value="Sport">Sport</option>
@@ -234,29 +234,29 @@ $allProducts = ($page === 'list') ? getProducts() : null;
                     </select>
                 </div>
                 <div class="field-group">
-                    <label>Stock</label>
+                    <label>Stan</label>
                     <input type="number" name="stock" id="edit-stock" oninput="updateEditPreview()">
                 </div>
 
                 <div class="field-group">
-                    <label>Image path</label>
+                    <label>Ścieżka do zdjęcia</label>
                     <input type="text" name="image" id="edit-image" placeholder="shoe.jpg" oninput="updatePreviewImage('edit-card-img','edit-card-img-ph',this.value)">
                 </div>
 
-                <button type="submit" class="btn-submit">Save Changes</button>
+                <button type="submit" class="btn-submit">Zapisz zmiany</button>
             </form>
 
             <!-- Предпросмотр редактируемого товара -->
             <div class="preview-wrap">
-                <div class="preview-label">Preview</div>
+                <div class="preview-label">Podgląd</div>
                 <div class="preview-card">
                     <div class="preview-img">
                         <img id="edit-card-img" alt="">
-                        <span id="edit-card-img-ph">No photo</span>
+                        <span id="edit-card-img-ph">Brak zdjęcia</span>
                     </div>
                     <div class="preview-body">
                         <div class="preview-cat"   id="edit-card-cat">Casual</div>
-                        <div class="preview-name"  id="edit-card-name">Product name</div>
+                        <div class="preview-name"  id="edit-card-name">Nazwa produktu</div>
                         <div class="preview-price" id="edit-card-price">— zl</div>
                         <div class="preview-meta"  id="edit-card-meta">Size: — | Stock: —</div>
                     </div>
@@ -270,11 +270,11 @@ $allProducts = ($page === 'list') ? getProducts() : null;
 <script>
 // === Обновляет предпросмотр карточки в форме добавления ===
 function updatePreview(){
-    document.getElementById('card-name').textContent  = document.getElementById('prev-name').value  || 'Product name';
-    document.getElementById('card-price').textContent = (document.getElementById('prev-price').value || '—') + ' zl';
+    document.getElementById('card-name').textContent  = document.getElementById('prev-name').value  || 'Nazwa produktu';
+    document.getElementById('card-price').textContent = (document.getElementById('prev-price').value || '—') + ' zł';
     document.getElementById('card-cat').textContent   = document.getElementById('prev-cat').value;
-    document.getElementById('card-meta').textContent  = 'Size: ' + (document.getElementById('prev-size').value  || '—')
-                                                      + ' | Stock: ' + (document.getElementById('prev-stock').value || '—');
+    document.getElementById('card-meta').textContent  = 'Rozmiar: ' + (document.getElementById('prev-size').value  || '—')
+                                                      + ' | Stan: ' + (document.getElementById('prev-stock').value || '—');
 }
 
 // === Обновляет фото предпросмотра по введённому пути ===
@@ -319,11 +319,11 @@ function closeEdit(){
 
 // === Обновляет предпросмотр карточки в модале редактирования ===
 function updateEditPreview(){
-    document.getElementById('edit-card-name').textContent  = document.getElementById('edit-name').value  || 'Product name';
-    document.getElementById('edit-card-price').textContent = (document.getElementById('edit-price').value || '—') + ' zl';
+    document.getElementById('edit-card-name').textContent  = document.getElementById('edit-name').value  || 'Nazwa produktu';
+    document.getElementById('edit-card-price').textContent = (document.getElementById('edit-price').value || '—') + ' zł';
     document.getElementById('edit-card-cat').textContent   = document.getElementById('edit-cat').value;
-    document.getElementById('edit-card-meta').textContent  = 'Size: ' + (document.getElementById('edit-size').value  || '—')
-                                                           + ' | Stock: ' + (document.getElementById('edit-stock').value || '—');
+    document.getElementById('edit-card-meta').textContent  = 'Rozmiar: ' + (document.getElementById('edit-size').value  || '—')
+                                                           + ' | Stan: ' + (document.getElementById('edit-stock').value || '—');
 }
 
 // Закрытие модала кликом на фон

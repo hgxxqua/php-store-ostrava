@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Login"])) {
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <title>Logowanie — ShoeShop</title>
     <style>
         body {
             margin: 0; 
@@ -127,11 +127,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Login"])) {
 </head>
 <body>
 
-    <a href="main.php"><h2 style="color:white; margin:0;">Back</h2></a>
+    <a href="main.php"><h2 style="color:white; margin:0;">Wróć</h2></a>
     
     <div class="glowa">
         <div class="login-box">
-            <h2>Login</h2>
+            <h2>Logowanie</h2>
 
             <?php if(isset($_SESSION["error"])): ?>
                 <div class="error-msg"><?= $_SESSION["error"] ?></div>
@@ -141,12 +141,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Login"])) {
             <form method="POST" action="login.php">
                 <div class="user-box">
                     <input type="text" name="Login" required="">
-                    <label>Username</label>
+                    <label>Nazwa użytkownika</label>
                 </div>
                 
                 <div class="user-box">
                     <input type="password" name="Haslo" required="">
-                    <label>Password</label>
+                    <label>Hasło</label>
                 </div>
 
                 <div class="blok-dla-knopki">

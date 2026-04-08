@@ -18,7 +18,7 @@
 <head>
     <meta charset="UTF-8">
     
-    <title>Login</title>
+    <title>Rejestracja — ShoeShop</title>
     <style>
 
       body {
@@ -131,7 +131,7 @@ a:hover {
 
 
 
-    <a href="main.php"><h2 style="color:white">Back</h2></a>
+    <a href="main.php"><h2 style="color:white">Wróć</h2></a>
     <div class="glowa">
         <div class="login-box">
             
@@ -145,11 +145,11 @@ a:hover {
             <form method='POST' action=''>
                 <div class="user-box">
                     <input type="text" name="username" required="">
-                    <label>Username</label>
+                    <label>Nazwa użytkownika</label>
                 </div>
                 <div class="user-box">
                     <input type="password" name="password" required="">
-                    <label>Password</label>
+                    <label>Hasło</label>
                 </div>
                     <div class="user-box">
 
@@ -162,7 +162,7 @@ a:hover {
     </div>  
                     
                   <div class="rejestracja">
-                        Już masz konto? <a href="login.php">Login</a>
+                        Już masz konto? <a href="login.php">Zaloguj się</a>
                        </div>
             </form>
         </div>
