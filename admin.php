@@ -129,7 +129,7 @@ $allOrders   = ($page === 'orders') ? getAdminOrders() : null;
 
                     <div class="field-group">
                         <label>Ścieżka do zdjęcia</label>
-                        <input type="text" name="image" id="prev-image" placeholder="shoe.jpg" oninput="updatePreviewImage('card-img','card-img-ph',this.value)">
+                        <input type="text" name="image_path" id="prev-image" placeholder="shoe.jpg" oninput="updatePreviewImage('card-img','card-img-ph',this.value)">
                     </div>
 
                     <button type="submit" class="btn-submit">Dodaj produkt</button>
@@ -162,8 +162,8 @@ $allOrders   = ($page === 'orders') ? getAdminOrders() : null;
             <div class="product-row">
                 <div class="product-row-img">
                     <?php
-                        $imgSrc = !empty($p['image'])
-                            ? (strpos($p['image'], '/') === false ? 'uploads/' . $p['image'] : $p['image'])
+                        $imgSrc = !empty($p['image_path'])
+                            ? (strpos($p['image_path'], '/') === false ? 'uploads/' . $p['image_path'] : $p['image_path'])
                             : '';
                     ?>
                     <?php if($imgSrc): ?>
@@ -304,6 +304,7 @@ $allOrders   = ($page === 'orders') ? getAdminOrders() : null;
                         <option value="Party">Party</option>
                     </select>
                 </div>
+                
                 <div class="field-group">
                     <label>Stan</label>
                     <input type="number" name="stock" id="edit-stock" oninput="updateEditPreview()">
@@ -311,7 +312,8 @@ $allOrders   = ($page === 'orders') ? getAdminOrders() : null;
 
                 <div class="field-group">
                     <label>Ścieżka do zdjęcia</label>
-                    <input type="text" name="image" id="edit-image" placeholder="shoe.jpg" oninput="updatePreviewImage('edit-card-img','edit-card-img-ph',this.value)">
+                    <input type="text" name="image_path" id="edit-image" placeholder="shoe.jpg" 
+                        oninput="updatePreviewImage('edit-card-img','edit-card-img-ph',this.value)">
                 </div>
 
                 <button type="submit" class="btn-submit">Zapisz zmiany</button>

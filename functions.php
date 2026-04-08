@@ -145,7 +145,7 @@ function checklogin($username, $db){
 
 
 
-// dodanie produktu 
+// Добавление продукта
 function addProduct(){
     $db       = polacz_z_baza();
     $name     = $_POST['name'];
@@ -155,20 +155,25 @@ function addProduct(){
     $brand    = $_POST['brand'];
     $category = $_POST['category'];
     $stock    = (int)$_POST['stock'];
+    
     if(!$name || $price <= 0) return;
+
     $name = mysqli_real_escape_string($db, $name);
     $desc = mysqli_real_escape_string($db, $desc);
     $size = mysqli_real_escape_string($db, $size);
     $brand = mysqli_real_escape_string($db, $brand);
     $category = mysqli_real_escape_string($db, $category);
-    $image = mysqli_real_escape_string($db, $_POST['image'] ?? '');
-    mysqli_query($db, "INSERT INTO products (name,description,price,size,brand,category,stock,image)
-        VALUES ('$name','$desc',$price,'$size','$brand','$category',$stock,'$image')");
+    
+    // Используем image_path, как в вашей БД
+    $image = mysqli_real_escape_string($db, $_POST['image_path'] ?? 'default.png');
+
+    mysqli_query($db, "INSERT INTO products (name, description, price, size, brand, category, stock, image_path)
+        VALUES ('$name', '$desc', $price, '$size', '$brand', '$category', $stock, '$image')");
 }
 
-// Aktualizacja dannych o zgodnie z id
+// Обновление продукта
 function updateProduct($id){
-    $db       = polacz_z_baza(); //
+    $db       = polacz_z_baza();
     $id       = (int)$id;
     
     $name     = $_POST['name'];
@@ -178,16 +183,18 @@ function updateProduct($id){
     $brand    = $_POST['brand'];
     $category = $_POST['category'];
     $stock    = (int)$_POST['stock'];
-    $image = $_POST['image'];
+    
+    // Получаем путь к картинке из формы
+    $image    = $_POST['image_path'] ?? 'default.png';
 
-    // wypelnienie dannych
     $name     = mysqli_real_escape_string($db, $name);
     $desc     = mysqli_real_escape_string($db, $desc);
     $size     = mysqli_real_escape_string($db, $size);
     $brand    = mysqli_real_escape_string($db, $brand);
     $category = mysqli_real_escape_string($db, $category);
-    $image    = mysqli_real_escape_string($db, $image); //
+    $image    = mysqli_real_escape_string($db, $image);
 
+    // ВАЖНО: Колонка должна называться image_path
     mysqli_query($db, "UPDATE products SET
         name='$name', description='$desc', price=$price,
         size='$size', brand='$brand', category='$category', stock=$stock, image_path='$image'
