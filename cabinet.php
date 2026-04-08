@@ -319,7 +319,7 @@ function formatDatePl(string $date): string {
 <nav>
   <a href="main.php" class="logo">👟 <span>Shoe</span>Shop</a>
   <div class="nav-links">
-    <a href="catalog.php">Katalog</a>
+    <a href="main.php">Katalog</a>
 
 <!-- 
 Tutaj mamy zmiane kolory roli uzytkownika 
