@@ -2,7 +2,7 @@
 session_start();
 require_once __DIR__ . '/functions.php';
 
-// Pobieramy aktualne filtry z adresu URL
+// przez metode GET otrzymujemy filtry 
 $current_brand = $_GET['brand'] ?? null;
 $current_cat   = $_GET['category'] ?? null;
 $search        = $_GET['q'] ?? null;
@@ -16,6 +16,27 @@ $search        = $_GET['q'] ?? null;
     <link rel="stylesheet" href="style.css">
     <style>
         /* Styl dla aktywnego filtra */
+
+        /* 
+         to tak powiem zmienne ktore mozemy wypisac na poczatku i 
+         za tym wykorzystac w css 
+        */
+        :root {
+      --bg:        #0f0f11;
+      --surface:   #18181c;
+      --surface2:  #222228;
+      --border:    rgba(255,255,255,0.07);
+      --text:      #e8e8ea;
+      --muted:     #7a7a85;
+      --accent:    #c8f04a;
+      --accent2:   #ff6b6b;
+      --blue:      #4a9eff;
+      --radius:    14px;
+    }
+
+
+
+
         .tag-btn.active {
             background-color: #ccff00;
             color: #000;
@@ -32,16 +53,45 @@ $search        = $_GET['q'] ?? null;
         .reset-link:hover {
             text-decoration: underline;
         }
+        
+        .cart-bembem { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+    .cart-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      text-decoration: none;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: all .2s;
+    }
+    .cart-btn:hover { color: var(--text); background: var(--surface2); }
+
+    .cart-badge {
+      color: #ff6d6d;
+      font-size: 11px;
+      font-weight: 600;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
     </style>
 </head>
 <body>
 
 <header class="header">
     <div class="logo">
-        <a href="main.php">👟 ShoeShop</a>
+        <a href="index.php">👟 ShoeShop</a>
     </div>
     
     <div class="auth">
+<!-- 
+    
+tutaj skrypt do navigation panel ze jezeli masz role admin to masz inne niz zwykly user
+
+-->
         <?php 
         if(isAdmin()){
            echo '<a href="admin.php">Panel administratora</a>';
@@ -70,7 +120,9 @@ $search        = $_GET['q'] ?? null;
         <a href="?brand=Versace"    class="tag-btn <?= ($current_brand == 'Versace') ? 'active' : '' ?>">Versace</a>
 
         <?php if ($current_brand || $current_cat || $search): ?>
+        <!-- Tutaj mamy oczyscienie filtra -->
             <a href="main.php" class="reset-link">✕ Wyczyść filtry</a>
+
         <?php endif; ?>
     </div>
     
@@ -80,6 +132,14 @@ $search        = $_GET['q'] ?? null;
             <button type="submit">Szukaj</button>
         </form>
     </div>
+
+    <div class="cart-bembem">
+        <a class="cart-btn" href="cart.php">
+        Koszyk 
+        <span class="cart-badge"></span>        
+        </a>
+    </div>
+    
 </div>
 
 <main class="main-wrapper">
@@ -94,7 +154,7 @@ $search        = $_GET['q'] ?? null;
 
     <div class="products">
         <?php
-        // Вызов функции получения продуктов с текущими фильтрами
+        // tutaj otrzymujemy produkty z filtrem
         $products_res = getProducts($current_cat, $current_brand, $search);
         
         if (mysqli_num_rows($products_res) > 0):
