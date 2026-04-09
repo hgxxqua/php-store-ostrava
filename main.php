@@ -120,7 +120,9 @@ tutaj skrypt do navigation panel ze jezeli masz role admin to masz inne niz zwyk
         <a href="?brand=Versace"    class="tag-btn <?= ($current_brand == 'Versace') ? 'active' : '' ?>">Versace</a>
 
         <?php if ($current_brand || $current_cat || $search): ?>
-        <!-- Tutaj mamy oczyscienie filtra -->
+        <!--
+            Tutaj mamy oczyscienie filtra 
+        -->
             <a href="main.php" class="reset-link">✕ Wyczyść filtry</a>
 
         <?php endif; ?>
@@ -154,12 +156,23 @@ tutaj skrypt do navigation panel ze jezeli masz role admin to masz inne niz zwyk
 
     <div class="products">
         <?php
-        // tutaj otrzymujemy produkty z filtrem
+        // tutaj otrzymujemy produkty z filtrem albo bez 
         $products_res = getProducts($current_cat, $current_brand, $search);
         
         if (mysqli_num_rows($products_res) > 0):
+            // rozdzielamy cala odpowiedz bazy na array za pomocy fetch_assoc 
+            // za tym za pomocy perli while wykonujemy vizualizacje tej odpowiedzi 
             while ($p = mysqli_fetch_assoc($products_res)): ?>
                 <div class="product-card">
+                    <?php
+                        // logika obrazka: jesli w bazie jest tylko nazwa bez tego foldera
+                        // to dodajemy folder /uploads/ ======== Jesli pelna sciezka - zostawiamy
+                        $imgSrc = !empty($p['image_path'])
+                            ? (strpos($p['image_path'], '/') === false ? 'uploads/' . $p['image_path'] : $p['image_path'])
+                            : 'default.png';
+                    ?>
+                    <img src="<?= htmlspecialchars($imgSrc) ?>" class="image-product" alt="<?= htmlspecialchars($p['name']) ?>">
+                    
                     <span class="product-category"><?= htmlspecialchars($p['category']) ?> | <?= htmlspecialchars($p['brand']) ?></span>
                     <h3><?= htmlspecialchars($p['name']) ?></h3>
                     <p class="price"><?= number_format($p['price'], 0, '.', ' ') ?> zl</p>
