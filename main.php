@@ -54,28 +54,105 @@ $search        = $_GET['q'] ?? null;
             text-decoration: underline;
         }
         
-        .cart-bembem { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+/* KONTENER DLA GUZIKA 
+To jest tylko pudelko, zeby guzik mial troche miejsca 
+dookola i nie przyklejal sie do innych rzeczy 
+*/
+.cart-bembem {
+    display: inline-block;
+    padding: 10px;
+}
 
-    .cart-btn {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 14px;
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 8px;
-      transition: all .2s;
-    }
-    .cart-btn:hover { color: var(--text); background: var(--surface2); }
+/* 
+Tutaj robimy caly styl:
+- robimy flex, zeby tekst i koszyk byly w linii
+- dajemy ciemny kolor (#1a1a1a), zeby pasowal do reszty sklepu
+- border-radius na 12px, bo takie zaokraglone rogi wygladaja nowoczesnie
+- overflow: visible jest MEGA WAZNE, bo inaczej nasz badge (licznik) 
+  zniknie, bo on wystaje poza guzik
+*/
+.cart-btn {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background: #1a1a1a; 
+    color: #ffffff;
+    text-decoration: none;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    border-radius: 12px;
+    border: 1px solid #333;
+    transition: all 0.3s ease; /* zeby zmiany koloru i ruchu byly plynne, a nie skakaly */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
-    .cart-badge {
-      color: #ff6d6d;
-      font-size: 11px;
-      font-weight: 600;
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-    }
+/* 
+Gdy user najedzie myszka:
+- zmieniamy ramke na ten nasz jaskrawy kolor (#ccff00)
+- guzik lekko idzie do gory (transform translateY), 
+  zeby user widzial, ze to dziala (taki vibe "kliknij mnie")
+*/
+.cart-btn:hover {
+    background: #252525;
+    border-color: #ccff00; 
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(204, 255, 0, 0.15);
+    color: #ccff00;
+}
+
+/* 
+To jest to male kolko z numerkiem:
+- position: absolute pozwala nam go wyrzucic na gora/prawa strona guzika
+- uzywamy tego jaskrawego koloru, zeby od razu walilo po oczach ile mamy rzeczy
+- border 2px czarny robi taka "odcinke", zeby sie nie zlewal z guzikiem
+*/
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #ccff00; 
+    color: #000;
+    font-size: 12px;
+    font-weight: 800;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 50%; /* robi idealne kolo */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 10px rgba(204, 255, 0, 0.5);
+    border: 2px solid #1a1a1a;
+    /* transition z cubic-bezier robi taki fajny efekt "odbicia" jump przy animacji */
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/*
+Jak najedziesz na guzik, to to male kolko troche sie powieksza 
+i lekko obraca (scale i rotate). Wyglada to pro i zywo.
+*/
+.cart-btn:hover .cart-badge {
+    transform: scale(1.2) rotate(10deg);
+}
+
+/* 
+Jesli badge nie jest pusty (:not(:empty)), to caly czas plynnie pulsuje.
+To taki trik, zeby przypomniec klientowi: "ej, masz cos w koszyku, kup to!"
+*/
+.cart-badge:not(:empty) {
+    animation: badge-pulse 2s infinite;
+}
+
+/* 
+Poprostu rozszerzamy cien (box-shadow) i go wygaszamy.
+*/
+@keyframes badge-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(204, 255, 0, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(204, 255, 0, 0); }
+}
 
     </style>
 </head>
@@ -135,12 +212,24 @@ tutaj skrypt do navigation panel ze jezeli masz role admin to masz inne niz zwyk
         </form>
     </div>
 
+    <!--
+
+    NAJPROSTSZY SKRYPT Z CALEGO PROJEKTU
+    jezeli nie mamy w sesji cart nic ti nie mamy znacznika obok koszyka 
+    jezeli mamy no przez count liczymy i piszemy 
+
+        -->
     <div class="cart-bembem">
-        <a class="cart-btn" href="cart.php">
-        Koszyk 
-        <span class="cart-badge"></span>        
-        </a>
-    </div>
+    <a class="cart-btn" href="cart.php">
+        🛒 Koszyk 
+        <?php 
+        $count = isset($_SESSION['cart']) ? array_sum($_SESSION['cart']) : 0; 
+        if($count > 0): 
+        ?>
+            <span class="cart-badge"><?= $count ?></span>
+        <?php endif; ?>
+    </a>
+</div>
     
 </div>
 

@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/db.php';
 
-// Autoryzuje użytkownika i uruchamia sesję
+// login i start sesji
 function login($username, $password){
     $db = polacz_z_baza();
     $u = mysqli_real_escape_string($db, $username);
@@ -67,44 +67,50 @@ function addToCart($productId) {
     }
 }
 
-// Składanie zamówienia
+/* */
+
 function placeOrder() {
-    if (empty($_SESSION['cart'])) return false;
+    if (empty($_SESSION['cart']) || !isset($_SESSION['username'])) return false;
     
     $db = polacz_z_baza();
-    $username = mysqli_real_escape_string($db, $_SESSION['username']);
-    $user_res = mysqli_query($db, "SELECT id FROM users WHERE name = '$username'");
-    $user = mysqli_fetch_assoc($user_res);
-    $userId = $user['id'];
+    $user = $_SESSION['username'];
     
+    // ыzukamy ID usera po username z sesji
+    $res_u = mysqli_query($db, "SELECT id FROM users WHERE name = '$user'");
+    $u_data = mysqli_fetch_assoc($res_u);
+    $userId = $u_data['id'];
+
+    // suma calkowita z koszyka
     $total = 0;
-    $items = [];
-    
     foreach ($_SESSION['cart'] as $id => $qty) {
-        $res = mysqli_query($db, "SELECT price, stock FROM products WHERE id = $id");
-        $p = mysqli_fetch_assoc($res);
-        if ($p && $p['stock'] >= $qty) {
-            $subtotal = $p['price'] * $qty;
-            $total += $subtotal;
-            $items[] = ['id' => $id, 'qty' => $qty, 'price' => $p['price']];
-        }
+        $res_p = mysqli_query($db, "SELECT price FROM products WHERE id = $id");
+        $p_data = mysqli_fetch_assoc($res_p);
+        $total += ($p_data['price'] * $qty);
     }
+
+    // rzucamy glowne zamowienie do bazy
     
-    if ($total > 0) {
-        mysqli_query($db, "INSERT INTO orders (user_id, total, created_at) VALUES ($userId, $total, CURDATE())");
-        $orderId = mysqli_insert_id($db);
-        
-        foreach ($items as $item) {
-            $pid = $item['id'];
-            $pqty = $item['qty'];
-            $pprice = $item['price'];
-            mysqli_query($db, "INSERT INTO order_items (order_id, product_id, quantity, price) VALUES ($orderId, $pid, $pqty, $pprice)");
-            mysqli_query($db, "UPDATE products SET stock = stock - $pqty WHERE id = $pid");
+    $sql_order = "INSERT INTO orders (user_id, total, created_at) 
+                  VALUES ($userId, $total, CURDATE() )";
+    
+    if (mysqli_query($db, $sql_order)) {
+        $orderId = mysqli_insert_id($db); // bierzemy ID tego zamowienia co wpadlo
+
+        // petla po koszyku - wrzucamy produkty do order_items
+        foreach ($_SESSION['cart'] as $id => $qty) {
+            $res_p = mysqli_query($db, "SELECT price FROM products WHERE id = $id");
+            $p_data = mysqli_fetch_assoc($res_p);
+            $cena = $p_data['price'];
+
+            mysqli_query($db, "INSERT INTO order_items (order_id, product_id, quantity, price) 
+                               VALUES ($orderId, $id, $qty, $cena)");
         }
-        
+
+        //koniec czyscimy koszyk i zwracamy TRUE
         unset($_SESSION['cart']);
         return true;
     }
+
     return false;
 }
 
@@ -145,7 +151,7 @@ function checklogin($username, $db){
 
 
 
-// Добавление продукта
+// dodanie produktu 
 function addProduct(){
     $db       = polacz_z_baza();
     $name     = $_POST['name'];
@@ -164,14 +170,14 @@ function addProduct(){
     $brand = mysqli_real_escape_string($db, $brand);
     $category = mysqli_real_escape_string($db, $category);
     
-    // Используем image_path, как в вашей БД
+    // wykorzystanie image-path z bd
     $image = mysqli_real_escape_string($db, $_POST['image_path'] ?? 'default.png');
 
     mysqli_query($db, "INSERT INTO products (name, description, price, size, brand, category, stock, image_path)
         VALUES ('$name', '$desc', $price, '$size', '$brand', '$category', $stock, '$image')");
 }
 
-// Обновление продукта
+// aktualizacja produktu
 function updateProduct($id){
     $db       = polacz_z_baza();
     $id       = (int)$id;
@@ -184,7 +190,7 @@ function updateProduct($id){
     $category = $_POST['category'];
     $stock    = (int)$_POST['stock'];
     
-    // Получаем путь к картинке из формы
+    // otrzymywanie tutaj tego image_path
     $image    = $_POST['image_path'] ?? 'default.png';
 
     $name     = mysqli_real_escape_string($db, $name);
@@ -194,7 +200,7 @@ function updateProduct($id){
     $category = mysqli_real_escape_string($db, $category);
     $image    = mysqli_real_escape_string($db, $image);
 
-    // ВАЖНО: Колонка должна называться image_path
+    // GLOWNIE !!! COLUMN W BD MUSI NAZYWAC SIE image_path
     mysqli_query($db, "UPDATE products SET
         name='$name', description='$desc', price=$price,
         size='$size', brand='$brand', category='$category', stock=$stock, image_path='$image'
@@ -202,9 +208,33 @@ function updateProduct($id){
 }
 
 // usuniecie produktu po id
+/*
+
+TRUDNOSC N1 
+JEZELI MAMY ODWOLANIE DO TEGO PRODUKTU W INNEJ TABELI 
+N.p. w zamoeniach to sql powie ze zjeb 
+ale tak mozemy to zrobicz
+najpierw usuwamy jakie kolwiek info o tym produkcie w innych tabelach a za tym juz 
+usuwamy sam produkt 
+
+
+*/
 function deleteProduct($id){
     $db = polacz_z_baza();
     $id = (int)$id;
-    mysqli_query($db, "DELETE FROM products WHERE id = $id");
+
+    //usuwamy powiazania 
+    mysqli_query($db, "DELETE FROM order_items WHERE product_id = $id");
+
+    // usuwamy sam produkt
+    if(mysqli_query($db, "DELETE FROM products WHERE id = $id")) {
+        // msg do sesji zeby wiedziec 
+        // widze te msg na index.php
+        // w sensie ze mam vizualizacje tego jezeli jestes adminem
+
+        $_SESSION['msg'] = "Produkt usunięty pomyślnie!";
+    } else {
+        die("Błąd przy usuwaniu: " . mysqli_error($db));
+    }
 }
 ?>

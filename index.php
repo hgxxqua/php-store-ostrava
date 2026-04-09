@@ -96,23 +96,20 @@ if (!isset($_SESSION["login-in"])) {
 
         <a href="main.php">Cl1ck here if y0u n9ed swag</a>
 
-</body>
-</html>
-</body>
-
+    <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "admin"): ?>
     <div style="color: white; background: #040404; padding: 20px; margin-left: 20px; border: 1px dashed #ccff00; opacity: 100%; animation: none; z-index: 1; " >
         <h3>Debug Session:</h3>
         <?php
             echo '<pre>';
-            // Выводим ВЕСЬ массив, а не только один ключ
+            // caly array Sesji do vizualizacji 
             print_r($_SESSION); 
             echo '</pre>';
             
         ?>
     </div>
+    <?php endif; ?>
 
 
-</div>
 </header>
 </body>
 </html>

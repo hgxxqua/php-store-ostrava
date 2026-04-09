@@ -63,7 +63,10 @@ function formatDatePl(string $date): string {
   <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;700&family=Onest:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    /*
+    to waktycznie tak powiem zmienne dla css 
+    czyli mozemy do jakiegos objektu
+    */
     :root {
       --bg:        #0f0f11;
       --surface:   #18181c;

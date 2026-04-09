@@ -1,4 +1,6 @@
 <?php
+// tutaj nie ma co kommentowac 
+// zwylke podlaczenie bd
 
 define('DB_HOST' , 'localhost');
 define('DB_USER','root');

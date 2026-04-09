@@ -7,9 +7,6 @@ require_once __DIR__ . '/functions.php';
 // funkcja addToCart z functions.php
 // odwolanie przez metode POST
 
-
-
-
 // odwolanie do metody z buttons 
 // kazda ma swoje i inna reakcje 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -17,14 +14,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         addToCart((int)$_POST['product_id']);
         header("Location: main.php"); exit;
     }
-    if (($_POST['action'] ?? '') === 'order') {
-        if (placeOrder()) {
-            $_SESSION['msg'] = "Zamówienie zostało złożone!";
-            // no tutaj mamy zapis do sesji ze udalo sie wszystko 
-            echo $_SESSION['msg'];
-            header("Location: cabinet.php"); exit;
-        }
+    /* 
+     mielismy problem bo bylo odwolanie do username w sesji 
+     jezeli nie mielismy zalogowanego czlowieka to byl caly krach systemu 
+    
+    */
+if (($_POST['action'] ?? '') === 'order') {
+    if (placeOrder()) {
+        $_SESSION['msg'] = "Zamówienie zostało złożone!";
+        header("Location: cabinet.php"); // tylko czysty redirect do kabinetu
+        exit;
+    } else {
+        // jesli funkcja placeOrder() zwrocila false (np. brak towaru)
+        $error = "Blad przy skladaniu zamowienia. Sprawdz czy towar jest w magazynie.";
     }
+}
     if (($_POST['action'] ?? '') === 'clear') {
         unset($_SESSION['cart']);
         header("Location: cart.php"); exit;
@@ -88,6 +92,7 @@ $db = polacz_z_baza();
 
     <div class="main-wrapper" style="display:block;">
         <h1>Twój koszyk</h1>
+        <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "admin"): ?>
         <?php
         echo "<pre>";
 
@@ -95,7 +100,7 @@ $db = polacz_z_baza();
         print_r($_SESSION["cart"]);
         echo "</pre>";
         ?>
-
+        <?php endif; ?>
 <!-- 
 dzialanie skryptu php tego dziala tak ze
 w sesji my mamy - 'cart' a w cart mamy juz
@@ -149,7 +154,9 @@ if (czy mamy pusty)
 ++++++++++++++++++++++++++++++++++++
 
 -->
-        <!-- tutaj mamy takie uzycie jak mowilem w roznych skryptach -->
+        <!-- tutaj mamy takie uzycie jak mowilem w roznych skryptach
+            tego if t endif 
+        -->
         <?php if (empty($_SESSION['cart'])): ?>
             <p>Koszyk jest pusty.</p>
         <?php else: ?>
@@ -162,10 +169,14 @@ if (czy mamy pusty)
                     $p = mysqli_fetch_assoc($res);
                     $sum = $p['price'] * $qty;
                     $grandTotal += $sum;
+                ?>
+                <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "admin"): ?>
+                    <?php
                     echo "<pre>";
                     print_r($p);
                     echo "</pre>";
-                ?>
+                    ?>
+                <?php endif; ?>
                 <tr>
                     <td><?= htmlspecialchars($p['name']) ?></td>
                     <td><?= $p['price'] ?> zl</td>
@@ -179,7 +190,14 @@ if (czy mamy pusty)
             
             <div style="display:flex; gap:10px; justify-content: flex-end; margin-top:20px;">
                 <form method="POST"><button name="action" value="clear" class="tag-btn">Wyczyść</button></form>
-                <form method="POST"><button name="action" value="order" class="btn-order">Złóż zamówienie</button></form>
+                    <?php
+                    if (isset($_SESSION['login-in']) && $_SESSION['login-in'] === true) {
+                        echo '<form method="POST"><button name="action" value="order" class="btn-order">Złóż zamówienie</button></form>';
+                    } else {
+                        echo '<a href="login.php"><button class="btn-order">Najpierw zaloguj się</button></a>';
+                    }
+
+                    ?>
             </div>
         <?php endif; ?>
     </div>

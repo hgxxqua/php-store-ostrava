@@ -108,7 +108,10 @@ body {
     overflow: hidden;
 }
 
-/* Welcome banner — всегда в DOM, затемняется при выборе раздела */
+/* 
+
+
+*/
 .admin-banner {
     position: absolute;
     top: 0; left: 0;

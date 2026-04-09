@@ -138,8 +138,8 @@ $allOrders   = ($page === 'orders') ? getAdminOrders() : null;
             <div class="product-row">
                 <div class="product-row-img">
                     <?php
-                        // Logika obrazka: jesli w bazie jest tylko nazwa (np. but.jpg), 
-                        // to dodajemy folder /uploads/. Jesli pelna sciezka - zostawiamy.
+                        // Logika obrazka: jesli w bazie jest tylko nazwa (np. but.jpg)
+                        // to dodajemy folder /uploads/ ========== Jesli pelna sciezka - zostawiamy
                         $imgSrc = !empty($p['image_path'])
                             ? (strpos($p['image_path'], '/') === false ? 'uploads/' . $p['image_path'] : $p['image_path'])
                             : '';
@@ -169,7 +169,8 @@ $allOrders   = ($page === 'orders') ? getAdminOrders() : null;
             <?php elseif($page === 'orders'): ?>
             <div class="section-title">📦 Zamówienia</div>
             <?php
-            // Kolory statusow - robimy mape zeby nie pisac 100 razy IF
+            // kolory statusow - robimy mape zeby nie pisac 100 razy IF
+            // ale ich jeszcze nie mamy w BD
             $statusLabels = [
                 'new'        => ['label' => 'Nowe',          'color' => '#4a9eff'],
                 'processing' => ['label' => 'W realizacji',  'color' => '#ffaa00'],
