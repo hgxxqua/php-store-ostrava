@@ -2,10 +2,9 @@
 session_start();
 require_once __DIR__ . '/functions.php';
 
-// Проверяем, пришла ли форма методом POST
+// sprawdzamy czy mamy to forme przez POST
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["Login"])) {
-    // Вызываем твою функцию из functions.php
-    // Убедись, что в HTML name="Login" и name="Haslo"
+    // wywoluje funckje
     login($_POST["Login"], $_POST["Haslo"]);
 }
 ?>

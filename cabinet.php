@@ -22,7 +22,7 @@ if (!$user) {
 }
 
 // kwerenda do otrzymania zamowienia
-// Обновленный запрос без колонки status
+
 $res_orders = mysqli_query($conn, "
     SELECT
         o.id,

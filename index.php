@@ -96,6 +96,12 @@ if (!isset($_SESSION["login-in"])) {
 
         <a href="main.php">Cl1ck here if y0u n9ed swag</a>
 
+
+
+        <!--
+                JEZELI MAMY ROLE ADMIN W SESJI TO ZROBILEM DEBUG TAKI 
+                ARRAY CALEJ SESJI DO VIZUALIZACJI
+-->
     <?php if (isset($_SESSION["role"]) && $_SESSION["role"] === "admin"): ?>
     <div style="color: white; background: #040404; padding: 20px; margin-left: 20px; border: 1px dashed #ccff00; opacity: 100%; animation: none; z-index: 1; " >
         <h3>Debug Session:</h3>

@@ -17,7 +17,8 @@ if(!is_dir(__DIR__ . '/uploads')){
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $action = $_POST['action'] ?? '';
     
-    // Obsluga przyciskow z formy
+    // obsluga przyciskow z formy
+    // POST i tak dalej no to easy
     if($action === 'add'){
         addProduct();
         header("Location: admin.php?page=list");
@@ -41,6 +42,22 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 }
 
 /*
+CALA glupota 
+trudno trudno 
+w razie czego uzylem ?? bo 
+
+
+mamy dwa jajka 
+ja duze 
+
+mamy tak 
+
+duze ?? male 
+jezeli duze jest to 100% bierz go 
+jezeli niema - no to bierz wtedy to male 
+
+
+
 */
 $page        = $_GET['page'] ?? '';
 $allProducts = ($page === 'list')   ? getProducts()    : null;
@@ -313,7 +330,7 @@ function closeEdit(){
     document.getElementById('edit-modal').classList.remove('open');
 }
 
-// Zamykanie modala jak klikniemy gdzies obok (w tlo)
+// Zamykanie pop up tak powiem jak klikniemy gdzies obok (w tlo)
 document.getElementById('edit-modal').addEventListener('click', function(e){
     if(e.target === this) closeEdit();
 });
